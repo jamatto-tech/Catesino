@@ -2,14 +2,18 @@ import { describe, expect, it } from "vitest";
 import { loadConfig, usdcToAtomic } from "@catesino/config";
 import { settlementFromOutcome } from "@catesino/blackjack";
 import {
+  cancelWithdraw,
   completeWithdraw,
   computeBuyAmountAtomic,
   computeFreeBalanceAtomic,
   createLedger,
   creditDeposit,
   getBalance,
+  getLockBreakdown,
   lockBet,
   requestWithdraw,
+  reverseDeposit,
+  setWithdrawFrozen,
   settleHand,
   totalPlayerLiability,
 } from "./ledger.js";
@@ -174,5 +178,117 @@ describe("ledger stake-lock path (shipped API)", () => {
       usdcToAtomic(1000),
     );
     expect(buyAtomic).toBe(usdcToAtomic(35));
+  });
+
+  it("hand lock cannot be completed as withdraw (lock separation)", () => {
+    const ledger = createLedger();
+    const user = "lock-sep";
+    creditDeposit(ledger, user, usdcToAtomic(50), "d");
+    lockBet(ledger, user, usdcToAtomic(30), "hand");
+    requestWithdraw(ledger, user, usdcToAtomic(10), "wd");
+    const locks = getLockBreakdown(ledger, user);
+    expect(locks.lockedHand).toBe(usdcToAtomic(30));
+    expect(locks.lockedWithdraw).toBe(usdcToAtomic(10));
+    // Completing more than withdraw lock must fail even if hand lock is larger
+    expect(() =>
+      completeWithdraw(ledger, user, usdcToAtomic(30), "steal-hand"),
+    ).toThrow(/insufficient locked for withdraw complete/);
+    completeWithdraw(ledger, user, usdcToAtomic(10), "wd-done");
+    expect(getLockBreakdown(ledger, user).lockedHand).toBe(usdcToAtomic(30));
+  });
+
+  it("cancel withdraw restores available", () => {
+    const ledger = createLedger();
+    creditDeposit(ledger, "u", usdcToAtomic(40), "d");
+    requestWithdraw(ledger, "u", usdcToAtomic(15), "wd");
+    cancelWithdraw(ledger, "u", usdcToAtomic(15), "wd-cancel");
+    expect(getBalance(ledger, "u").available).toBe(usdcToAtomic(40));
+    expect(getLockBreakdown(ledger, "u").lockedWithdraw).toBe(0n);
+  });
+
+  it("frozen user cannot request withdraw", () => {
+    const ledger = createLedger();
+    creditDeposit(ledger, "u", usdcToAtomic(20), "d");
+    setWithdrawFrozen(ledger, "u", true);
+    expect(() =>
+      requestWithdraw(ledger, "u", usdcToAtomic(5), "wd"),
+    ).toThrow(/frozen/);
+  });
+
+  it("reorg reverse freezes when available insufficient", () => {
+    const ledger = createLedger();
+    creditDeposit(ledger, "u", usdcToAtomic(10), "d");
+    lockBet(ledger, "u", usdcToAtomic(10), "lock");
+    reverseDeposit(ledger, "u", usdcToAtomic(10), "reorg");
+    expect(getBalance(ledger, "u").available).toBe(0n);
+    expect(() =>
+      requestWithdraw(ledger, "u", usdcToAtomic(1), "wd"),
+    ).toThrow(/frozen/);
+  });
+
+  it("rejects malicious settlement that credits above max mult", () => {
+    const ledger = createLedger();
+    creditDeposit(ledger, "u", usdcToAtomic(10), "d");
+    lockBet(ledger, "u", usdcToAtomic(10), "lock");
+    const bet = usdcToAtomic(10);
+    const evilCredit = bet * 1001n;
+    expect(() =>
+      settleHand(
+        ledger,
+        "u",
+        {
+          outcome: "player_win",
+          betAtomic: bet,
+          creditAvailableAtomic: evilCredit,
+          houseEquityDeltaAtomic: bet - evilCredit,
+        },
+        "evil",
+      ),
+    ).toThrow(/maximum/);
+  });
+
+  it("accepts high but valid house-game mult (e.g. 250× royal)", () => {
+    const ledger = createLedger();
+    creditDeposit(ledger, "u", usdcToAtomic(10), "d");
+    lockBet(ledger, "u", usdcToAtomic(10), "lock");
+    const bet = usdcToAtomic(10);
+    const credit = bet * 250n;
+    settleHand(
+      ledger,
+      "u",
+      {
+        outcome: "player_win",
+        betAtomic: bet,
+        creditAvailableAtomic: credit,
+        houseEquityDeltaAtomic: bet - credit,
+      },
+      "royal",
+    );
+    expect(getBalance(ledger, "u").available).toBe(credit);
+  });
+
+  it("rejects settlement that does not conserve stake", () => {
+    const ledger = createLedger();
+    creditDeposit(ledger, "u", usdcToAtomic(10), "d");
+    lockBet(ledger, "u", usdcToAtomic(10), "lock");
+    expect(() =>
+      settleHand(
+        ledger,
+        "u",
+        {
+          outcome: "player_win",
+          betAtomic: usdcToAtomic(10),
+          creditAvailableAtomic: usdcToAtomic(20),
+          houseEquityDeltaAtomic: 0n, // should be -bet
+        },
+        "bad-conserved",
+      ),
+    ).toThrow(/conserve/);
+  });
+
+  it("rejects zero or negative deposit amounts", () => {
+    const ledger = createLedger();
+    expect(() => creditDeposit(ledger, "u", 0n, "z")).toThrow(/positive/);
+    expect(() => creditDeposit(ledger, "u", -1n, "n")).toThrow(/positive/);
   });
 });

@@ -11,8 +11,17 @@ import type { VideoCateState } from "@catesino/house-games";
 import { usdcToAtomic } from "@catesino/config";
 
 /**
- * Shared in-memory demo wallet across all Cate games.
+ * Shared in-memory **demo** wallet across all Cate games.
  * Server-only — never import from client components.
+ *
+ * SECURITY:
+ * - Demo credits are fictional; not linked to Solana deposits/withdrawals.
+ * - Never call creditDeposit from request bodies or client-controlled amounts
+ *   beyond the one-time seed below.
+ * - Real deposit claims / withdrawals must use @catesino/chain evaluateDepositClaim
+ *   / evaluateWithdrawRequest + authenticated SIWS session (not this module).
+ * - Do not enable FF_DEPOSITS_USDC / FF_WITHDRAWALS until those paths are wired
+ *   to this process with private keys only in the worker secret store.
  */
 export type DemoTable = {
   ledger: LedgerSnapshot;

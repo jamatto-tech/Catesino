@@ -38,4 +38,23 @@ describe("loadConfig", () => {
     expect(isBetWithinLimits(usdcToAtomic(5), cfg.betLimits)).toBe(true);
     expect(isBetWithinLimits(usdcToAtomic(0.1), cfg.betLimits)).toBe(false);
   });
+
+  it("defaults custody flags off and loads deposit/withdraw policy", () => {
+    const cfg = loadConfig({});
+    expect(cfg.flags.depositsUsdc).toBe(false);
+    expect(cfg.flags.withdrawals).toBe(false);
+    expect(cfg.custody.minDepositUsdc).toBe(1);
+    expect(cfg.custody.minConfirmations).toBe(32);
+    expect(cfg.custody.withdrawFirstCooldownHours).toBe(24);
+    expect(cfg.custody.withdrawDualApproveThresholdUsdc).toBe(500);
+  });
+
+  it("rejects inverted withdraw dual-approve threshold", () => {
+    expect(() =>
+      loadConfig({
+        WITHDRAW_MANUAL_THRESHOLD_USDC: "500",
+        WITHDRAW_DUAL_APPROVE_THRESHOLD_USDC: "100",
+      }),
+    ).toThrow(/DUAL_APPROVE/);
+  });
 });
