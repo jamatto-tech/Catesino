@@ -4,6 +4,8 @@ Community-driven casino for **$CATE**. Players wager USDC on house games; free t
 
 Design source of truth: [`docs/design/catesino-design-v0.2.2.md`](docs/design/catesino-design-v0.2.2.md)
 
+**Ship checklist / how far to live:** [`docs/readiness-roadmap.md`](docs/readiness-roadmap.md) — tracks A (demo) → B (private real USDC) → C (public mainnet). Check boxes as you go.
+
 ## Monorepo layout
 
 ```text

@@ -7,7 +7,7 @@
   "scripts": {
     "build": "pnpm -r --filter=./packages/* run build && pnpm --filter @catesino/web run build && pnpm --filter @catesino/worker run build",
     "typecheck": "pnpm -r run typecheck",
-    "test": "pnpm -r --filter=./packages/* run test",
+    "test": "pnpm -r --filter=./packages/* run test && pnpm --filter @catesino/web test",
     "test:blackjack": "pnpm --filter @catesino/blackjack test",
     "test:ledger": "pnpm --filter @catesino/ledger test",
     "dev:web": "pnpm --filter @catesino/web dev",

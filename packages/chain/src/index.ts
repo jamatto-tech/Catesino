@@ -37,3 +37,29 @@ export {
   type WithdrawApprovalLevel,
   type WithdrawRejectReason,
 } from "./withdraw-policy.js";
+
+export {
+  parseTokenTransferLegs,
+  txSucceeded,
+  type JsonParsedTransaction,
+  type JsonParsedIx,
+} from "./tx-parse.js";
+
+export {
+  fetchDepositTransaction,
+  fetchTokenAccountBalanceAtomic,
+  type RpcFetch,
+  type FetchedDepositTx,
+} from "./rpc-client.js";
+
+export {
+  buildSiwsMessage,
+  parseSiwsMessage,
+  verifySolanaEd25519,
+  verifySiwsLogin,
+  generateNonceHex,
+  clusterToChainId,
+  type SiwsMessageFields,
+} from "./siws.js";
+
+export { base58Encode, base58Decode } from "./base58.js";

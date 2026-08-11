@@ -15,6 +15,7 @@ export async function GET() {
     : null;
 
   return NextResponse.json({
+    mode: "demo",
     balances: {
       availableUsdc: atomicToUsdc(BigInt(bal.availableAtomic)),
       lockedUsdc: atomicToUsdc(BigInt(bal.lockedAtomic)),
@@ -24,5 +25,6 @@ export async function GET() {
       maxUsdc: config.betLimits.maxUsdc,
     },
     hand,
+    note: "Demo credits only — not real USDC. Real funds use /api/me/* after SIWS login.",
   });
 }

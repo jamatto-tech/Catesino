@@ -96,6 +96,22 @@ export const envSchema = z.object({
   WITHDRAW_HOT_MAX_BALANCE_USDC: numberFromEnv.min(0).default(2000),
 
   CATESINO_AUTH_DOMAIN: z.string().default("localhost"),
+  /**
+   * HMAC secret for sealing session cookies.
+   * Required in production when auth is used; dev has a non-secret default.
+   */
+  SESSION_SECRET: z.string().default("dev-only-change-me-catesino-session"),
+  /** Primary Solana JSON-RPC URL (deposit claim verify). */
+  SOLANA_RPC_URL: z.string().default(""),
+  /** Secondary RPC for large claims (≥ SECONDARY_RPC_THRESHOLD). */
+  SOLANA_RPC_URL_SECONDARY: z.string().default(""),
+  /**
+   * Optional withdraw-hot USDC ATA for balance checks.
+   * If empty, withdraw policy uses max balance config as soft stand-in
+   * only when FF_WITHDRAWALS is on in non-production (never invent balance on mainnet).
+   */
+  WITHDRAW_HOT_USDC_ATA: z.string().default(""),
+
   PORT: numberFromEnv.default(3000),
   WORKER_PORT: numberFromEnv.default(3100),
 });
@@ -182,6 +198,10 @@ export type AppConfig = {
   };
   flags: FeatureFlags;
   authDomain: string;
+  sessionSecret: string;
+  solanaRpcUrl: string;
+  solanaRpcUrlSecondary: string;
+  withdrawHotUsdcAta: string;
   usdcDecimals: typeof USDC_DECIMALS;
 };
 
@@ -330,6 +350,10 @@ export function loadConfig(
       videocateEnabled: parsed.FF_VIDEOCATE_ENABLED,
     },
     authDomain: parsed.CATESINO_AUTH_DOMAIN,
+    sessionSecret: parsed.SESSION_SECRET,
+    solanaRpcUrl: parsed.SOLANA_RPC_URL.trim(),
+    solanaRpcUrlSecondary: parsed.SOLANA_RPC_URL_SECONDARY.trim(),
+    withdrawHotUsdcAta: parsed.WITHDRAW_HOT_USDC_ATA.trim(),
     usdcDecimals: USDC_DECIMALS,
   };
 }

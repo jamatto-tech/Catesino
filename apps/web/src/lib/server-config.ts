@@ -11,3 +11,8 @@ export function getServerConfig() {
   }
   return cached;
 }
+
+/** Test-only: drop cached config so env stubs take effect. */
+export function resetServerConfigCacheForTests(): void {
+  cached = null;
+}
