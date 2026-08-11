@@ -1,0 +1,2 @@
+# Drop official $CATE / Catesino meme assets here (png/jpg/webp).
+# Wire them into page.tsx meme-stage <img src="/memes/your-file.webp" /> slots.
