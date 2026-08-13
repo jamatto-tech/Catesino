@@ -15,6 +15,8 @@ export function MintPreviewGrid({
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const marks = new Map((nft?.marks ?? []).map((m) => [m.itemId, m]));
+  const yours = new Set(nft?.yours ?? marks.keys());
+  const taken = new Set(nft?.taken ?? []);
 
   const act = async (action: "mark" | "upgrade", itemId: string) => {
     if (busy || !onChange) return;
@@ -45,9 +47,9 @@ export function MintPreviewGrid({
         <p className="life__tag">ninth life · gold beside diamond</p>
         <h2>GOLD &amp; DIAMOND</h2>
         <p>
-          Left is Gold — the mint. Right is Diamond — the upgrade cut. Both
-          stay on the card. Diamond is the rare sparkle after 90 days and 15
-          bagwork posts.
+          Left is Gold — the mint. Right is Diamond — the upgrade cut. A won
+          1/1 is darkened and crossed out. Diamond is the rare sparkle after
+          90 days and 15 bagwork posts.
         </p>
       </header>
       {error ? (
@@ -61,6 +63,13 @@ export function MintPreviewGrid({
             key={piece.id}
             piece={piece}
             mark={marks.get(piece.id)}
+            claimed={
+              yours.has(piece.id)
+                ? "yours"
+                : taken.has(piece.id)
+                  ? "taken"
+                  : undefined
+            }
             canClaim={Boolean(nft?.canClaim)}
             canCut={Boolean(nft?.canCutDiamond)}
             busy={busy === piece.id}
@@ -77,6 +86,7 @@ export function MintPreviewGrid({
 function MintCard({
   piece,
   mark,
+  claimed,
   canClaim,
   canCut,
   busy,
@@ -86,6 +96,7 @@ function MintCard({
 }: {
   piece: (typeof NINTH_LIFE_PREVIEWS)[number];
   mark?: NftMark;
+  claimed?: "yours" | "taken";
   canClaim: boolean;
   canCut: boolean;
   busy: boolean;
@@ -94,12 +105,14 @@ function MintCard({
   onUpgrade: () => void;
 }) {
   const diamond = piece.diamondSrc ?? ultraDiamondSrc(piece.id);
+  const won = Boolean(claimed);
 
   return (
     <li
-      className={`mint-card${diamond ? " mint-card--pair" : ""}`}
+      className={`mint-card${diamond ? " mint-card--pair" : ""}${won ? " mint-card--won" : ""}`}
       data-rarity={piece.rarity}
       data-tier={mark?.tier ?? (diamond ? "pair" : "gold")}
+      data-claimed={claimed ?? ""}
     >
       <div className="mint-pair">
         <figure data-tier="gold">
@@ -122,7 +135,12 @@ function MintCard({
         </span>
         <strong>{piece.name}</strong>
         <p>{piece.copy}</p>
-        {interactive ? (
+        {won ? (
+          <p className="mint-card__won">
+            {claimed === "yours" ? "you won this 1/1" : "already won"}
+          </p>
+        ) : null}
+        {interactive && claimed !== "taken" ? (
           <div className="mint-card__act">
             {!mark ? (
               <button

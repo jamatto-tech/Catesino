@@ -3,6 +3,7 @@ import { getServerConfig } from "@/lib/server-config";
 import { getCateLinks } from "@/lib/cate-links";
 import { CateDrive } from "@/components/CateDrive";
 import { MemeFrame } from "@/components/MemeFrame";
+import { DESK_GAMES } from "@/lib/desk-games";
 
 /**
  * Community art under /public/memes — pulled from X posts that cite the
@@ -22,17 +23,17 @@ export default function HomePage() {
   return (
     <main className="shell-wide">
       <section className="life center" id="top">
-        <p className="life__tag">not another chart</p>
+        <p className="life__tag">desk · machine · not a casino</p>
         <h1 className="h-title">
           CATE<span className="it">SINO</span>
         </h1>
         <div className="h-rule">
-          <span>stop aping. start playing.</span>
+          <span>hold the cat. play the desk.</span>
         </div>
         <p className="h-sub">
-          the play sister of <span className="gold">$CATE</span>
+          the culture sister of <span className="gold">$CATE</span>
         </p>
-        <p className="h-meta">$CATE · SOLANA · PLAY · HOUSE BUYS THE CAT</p>
+        <p className="h-meta">$CATE · SOLANA · DESK · MACHINE · NINTH LIFE</p>
 
         <div className="logo-coin">
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -40,18 +41,19 @@ export default function HomePage() {
         </div>
         <p className="credit-line">community $CATE mark · Solana</p>
 
-        <p className="say" style={{ textAlign: "center", maxWidth: "32rem" }}>
-          You were gonna lose it on a candle you don&apos;t even believe in.
-          Spend it here instead. House edge still buys <strong>$CATE</strong>.
+        <p className="say" style={{ textAlign: "center", maxWidth: "34rem" }}>
+          Four arcade games about one chart. A Machine that pays cosmetics and
+          later mints. Score is points, not cash. Rare and Ultra need a
+          30-day <strong>$CATE</strong> hold. We don&apos;t run a house book.
         </p>
 
         <div className="btn-row" style={{ marginTop: "2rem" }}>
           <Link className="btn btn--gold" href="/play">
-            Come play
+            Open the desk
           </Link>
           {config.flags.gachaEnabled ? (
             <Link className="btn btn--line" href="/machine">
-              Yank yarn
+              The Machine
             </Link>
           ) : null}
           <a
@@ -82,15 +84,17 @@ export default function HomePage() {
       <section className="life center" id="thesis" aria-label="Why Catesino">
         <div className="shell">
           <blockquote className="thesis-banner">
-            <p className="thesis-banner__kicker">Don&apos;t trade what you don&apos;t believe</p>
+            <p className="thesis-banner__kicker">
+              Don&apos;t ape a chart you have no thesis on
+            </p>
             <p className="thesis-banner__line">
-              Instead of throwing money at random tokens and watching it
-              disappear — <em>hold, call, and pull at Catesino</em>. One chart.
-              One cat. <strong>$CATE</strong>.
+              If you believe the cat, hold it. If you don&apos;t, play the
+              desk or yank yarn — <em>one mint, one culture</em>.{" "}
+              <strong>$CATE</strong>.
             </p>
             <p className="thesis-banner__sub">
-              Desk. Machine. Bagwork.{" "}
-              <span className="gold">$CATE still wins.</span>
+              Desk games. Machine. Ninth Life.{" "}
+              <span className="gold">Still the cat.</span>
             </p>
           </blockquote>
         </div>
@@ -98,17 +102,16 @@ export default function HomePage() {
 
       <section className="life" id="why">
         <div className="shell">
-          <p className="life__tag">the bit</p>
+          <p className="life__tag">what this is</p>
           <h2
             className="h-title"
             style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)" }}
           >
-            NOT A CONVICTION TRADE
+            TWO ROOMS. ONE CAT.
           </h2>
           <p className="say" style={{ marginTop: "1.25rem" }}>
-            No thesis on a 15m chart. No “just 0.5 SOL bro.” This is the desk
-            and the machine — conviction games and Cate cosmetics, not a
-            casino book.
+            The desk is arcade tape about live $CATE. The Machine is yarn,
+            bagwork, and later mints. No blackjack. No slots. No USDC book.
           </p>
 
           <MemeFrame
@@ -123,11 +126,12 @@ export default function HomePage() {
             <article className="law">
               <h3>
                 <span>01 · DESK</span>
-                Hold, call, flip
+                Hold, ride, seal, flip
               </h3>
               <p>
-                Hold the Line, the Cate Desk, Call the Vault, Tape Flip. One
-                chart. Conviction points — not a casino book.
+                Survive FUD wicks. Paper-trade twenty seconds of live $CATE.
+                Seal Cate&apos;s day. Call a fake 50/50 candle. Score, not
+                cash.
               </p>
             </article>
             <article className="law">
@@ -136,27 +140,87 @@ export default function HomePage() {
                 Yarn in, culture out
               </h3>
               <p>
-                Cosmetics now. Rare/Ultra mints need a 30-day $CATE hold.
-                Ultra Gold can cut to Diamond. Daily yarn is bagwork on X.
-                We don&apos;t cash any of it.
+                Daily yarn is bagwork on X. Commons are cosmetics. We
+                don&apos;t cash frames.
               </p>
             </article>
             <article className="law">
               <h3>
-                <span>03 · HOLD</span>
-                Vault doesn&apos;t dump on you
+                <span>03 · NINTH LIFE</span>
+                Hold to mint
               </h3>
               <p>
-                Bought Cate sits in the community vault. Same mint as{" "}
-                <a href={cate.brand} target="_blank" rel="noreferrer">
-                  cate.meme
-                </a>
-                . We don&apos;t sell it back at you.
+                Rare and Ultra need 30 days of $CATE. Ultra mints Gold. Cut
+                to Diamond after 90 days and 15 bagwork posts. Won 1/1s get
+                crossed out.
               </p>
             </article>
           </div>
         </div>
       </section>
+
+      <section className="life" id="desk">
+        <div className="shell">
+          <p className="life__tag">the desk</p>
+          <h2
+            className="h-title"
+            style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)" }}
+          >
+            FOUR GAMES. ONE TAPE.
+          </h2>
+          <p className="say" style={{ marginTop: "0.75rem" }}>
+            All four read $CATE. None of them are a broker.
+          </p>
+          <div className="game-grid" style={{ marginTop: "1.75rem" }}>
+            {DESK_GAMES.map((g) => (
+              <article key={g.id} className={`game-card game-card--${g.id}`}>
+                <div className="game-card__art" aria-hidden>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={g.art} alt="" />
+                </div>
+                <h2 className="game-card__name">{g.name}</h2>
+                <p className="game-card__tag">{g.tagline}</p>
+                <p className="game-card__blurb">{g.blurb}</p>
+                <Link className="btn btn--gold btn--sm" href={g.href}>
+                  Open {g.name}
+                </Link>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {config.flags.gachaEnabled ? (
+        <section className="life center" id="machine">
+          <div className="shell">
+            <section className="machine-teaser">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                className="machine-teaser__art"
+                src="/machine/hero.jpg"
+                alt=""
+              />
+              <p className="life__tag" style={{ justifyContent: "center" }}>
+                yarn in · gold to diamond
+              </p>
+              <h2>THE CATE MACHINE</h2>
+              <p>
+                Yank yarn for cosmetics. Hold $CATE thirty days before Rare
+                or Ultra. Gold sits next to Diamond. A won 1/1 is crossed
+                out.
+              </p>
+              <div className="btn-row">
+                <Link className="btn btn--gold btn--sm" href="/machine">
+                  Yank the yarn
+                </Link>
+                <Link className="btn btn--line btn--sm" href="/machine#diamond-mints">
+                  See the mints
+                </Link>
+              </div>
+            </section>
+          </div>
+        </section>
+      ) : null}
 
       <section className="life center" id="coin">
         <p className="life__tag">the coin</p>
@@ -186,7 +250,11 @@ export default function HomePage() {
           className="meme-stage--glow"
         />
         <p className="say" style={{ textAlign: "center", marginTop: "1.5rem" }}>
-          Sister of doge. That&apos;s the bit.
+          Sister of doge. Sibling of{" "}
+          <a href={cate.brand} target="_blank" rel="noreferrer">
+            cate.meme
+          </a>
+          .
         </p>
         <p className="credit-line">
           community art circulating with mint{" "}
@@ -225,8 +293,7 @@ export default function HomePage() {
           />
         </div>
         <p className="credit-line" style={{ marginTop: "1rem" }}>
-          pulled from X posts that cite the official mint · swap anytime in{" "}
-          <code>/public/memes</code>
+          pulled from X posts that cite the official mint
         </p>
       </section>
 
@@ -237,36 +304,47 @@ export default function HomePage() {
             className="h-title"
             style={{ fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)" }}
           >
-            THREE MOVES
+            FOUR MOVES
           </h2>
           <div className="laws" style={{ marginTop: "1.75rem" }}>
             <article className="law">
               <h3>
                 <span>01</span>
-                Click a game
+                Open the desk
               </h3>
               <p>
-                Open the desk. Hold or call. No wallet lecture.
+                Hold wicks, ride twenty seconds, seal the day, or flip a
+                published 50/50. No wallet lecture.
               </p>
             </article>
             <article className="law">
               <h3>
                 <span>02</span>
-                Bagwork + yarn
+                Bagwork for yarn
               </h3>
               <p>
-                Post $CATE on X for daily yarn. Yank the Machine. Cosmetics,
-                not chips.
+                Post $CATE on X. That unlocks daily yarn and starts the mint
+                hold clock.
               </p>
             </article>
             <article className="law">
               <h3>
                 <span>03</span>
+                Yank the Machine
+              </h3>
+              <p>
+                Cosmetics now. Rare and Ultra mints after 30 days holding.
+                Gold cuts to Diamond with time and posts.
+              </p>
+            </article>
+            <article className="law">
+              <h3>
+                <span>04</span>
                 Buy $CATE if you like the cat
               </h3>
               <p>
-                Conviction goes on pump.fun, FOMO, or Moonshot. When live, free
-                treasury buys join you on-chain.
+                Conviction lives on pump.fun, FOMO, or Moonshot. The vault
+                still holds. We don&apos;t dump on you.
               </p>
             </article>
           </div>
@@ -281,16 +359,16 @@ export default function HomePage() {
             <span>desk games</span>
           </div>
           <div>
-            <b>0.90%</b>
-            <span>rare machine</span>
+            <b>30d</b>
+            <span>hold to mint</span>
+          </div>
+          <div>
+            <b>90d</b>
+            <span>gold → diamond</span>
           </div>
           <div>
             <b>BAG</b>
             <span>daily yarn</span>
-          </div>
-          <div>
-            <b>HOLD</b>
-            <span>community vault</span>
           </div>
         </div>
       </section>
@@ -302,9 +380,9 @@ export default function HomePage() {
           <img src={MEMES.logo} alt="" />
         </div>
         <p className="say" style={{ textAlign: "center", maxWidth: "28rem" }}>
-          Don&apos;t have conviction? Don&apos;t trade.
+          Don&apos;t have a thesis? Don&apos;t trade.
           <br />
-          <strong>Come play. $CATE still wins.</strong>
+          <strong>Hold the cat. Open the desk. $CATE still wins.</strong>
         </p>
 
         <div className="ca-box">
@@ -320,8 +398,13 @@ export default function HomePage() {
 
         <div className="btn-row" style={{ marginTop: "1.75rem" }}>
           <Link className="btn btn--gold" href="/play">
-            Come play
+            Open the desk
           </Link>
+          {config.flags.gachaEnabled ? (
+            <Link className="btn btn--line" href="/machine">
+              Machine
+            </Link>
+          ) : null}
           <a
             className="btn btn--ember"
             href={cate.buy.pumpfun}
@@ -329,22 +412,6 @@ export default function HomePage() {
             rel="noreferrer"
           >
             Buy on pump.fun
-          </a>
-          <a
-            className="btn btn--line"
-            href={cate.buy.fomo}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Buy on FOMO
-          </a>
-          <a
-            className="btn btn--line"
-            href={cate.buy.moonshot}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Buy on Moonshot
           </a>
         </div>
 

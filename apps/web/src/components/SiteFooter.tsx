@@ -7,13 +7,13 @@ export function SiteFooter() {
     <footer className="foot">
       <div className="foot__mark">CATESINO · $CATE</div>
       <p className="foot__end">
-        Play sister of{" "}
+        Desk and Machine sister of{" "}
         <a href={cate.brand} target="_blank" rel="noreferrer">
           cate.meme
         </a>
-        . Don&apos;t ape random charts.
+        . One chart. One cat.
         <br />
-        Not financial advice · Demo play ·{" "}
+        Not financial advice · Score, not cash ·{" "}
         <a href={cate.buy.pumpfun} target="_blank" rel="noreferrer">
           Buy $CATE
         </a>

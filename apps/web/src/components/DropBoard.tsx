@@ -42,6 +42,7 @@ export function DropBoard({ lanes, ownedIds = [], lastItemId }: Props) {
                   key={item.itemId}
                   item={item}
                   owned={owned.has(item.itemId)}
+                  claimed={item.claimed}
                   latest={item.itemId === lastItemId}
                 />
               ))}
@@ -56,15 +57,18 @@ export function DropBoard({ lanes, ownedIds = [], lastItemId }: Props) {
 function DropCard({
   item,
   owned,
+  claimed,
   latest,
 }: {
   item: PublicItem;
   owned: boolean;
+  claimed?: "yours" | "taken";
   latest: boolean;
 }) {
   return (
     <li
-      className={`drop-card${owned ? " drop-card--owned" : ""}${latest ? " drop-card--latest" : ""}${item.sample || item.imageSrc ? " drop-card--art" : ""}`}
+      className={`drop-card${owned ? " drop-card--owned" : ""}${latest ? " drop-card--latest" : ""}${item.sample || item.imageSrc ? " drop-card--art" : ""}${claimed ? " drop-card--won" : ""}`}
+      data-claimed={claimed ?? ""}
     >
       <span className="drop-card__emoji" aria-hidden>
         {item.imageSrc ? (
@@ -76,7 +80,9 @@ function DropCard({
       </span>
       <span className="drop-card__name">{item.name}</span>
       <span className="drop-card__kind">{dropKindLabel(item)}</span>
-      {item.sample ? (
+      {claimed ? (
+        <em>{claimed === "yours" ? "won" : "taken"}</em>
+      ) : item.sample ? (
         <em>sample · not live</em>
       ) : latest ? (
         <em>just pulled</em>

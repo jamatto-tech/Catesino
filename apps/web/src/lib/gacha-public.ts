@@ -17,6 +17,7 @@ export type PublicItem = {
   copy: string;
   imageSrc?: string;
   sample?: boolean;
+  claimed?: "yours" | "taken";
 };
 
 export type PublicDropLane = {
@@ -40,7 +41,7 @@ export type PublicGachaState = {
   lastReceipt: CookieReceipt | null;
   faucet: { lastFaucetUtcDate: string };
   bagwork: { unlockedToday: boolean; count: number };
-  nft: NftProgress & { marks: NftMark[] };
+  nft: NftProgress & { marks: NftMark[]; taken: string[]; yours: string[] };
   drops: PublicDropLane[];
 };
 

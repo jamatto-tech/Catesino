@@ -17,6 +17,7 @@ import {
 } from "@catesino/gacha";
 import type { PublicDropLane, PublicGachaState, PublicItem } from "@/lib/gacha-public";
 import { NINTH_LIFE_PREVIEWS } from "@/lib/gacha-mints";
+import { listedNftClaims, nftIsClaimed, recordNftClaim } from "@/lib/nft-claims";
 import {
   applyBagworkGrant,
   applyYarnFaucet,
@@ -74,6 +75,12 @@ export function toPublicState(
   config: AppConfig,
 ): PublicGachaState {
   const catalog = catalogV1();
+  const yours = new Set((state.nftMarks ?? []).map((m) => m.itemId));
+  if (state.inventory.some((row) => row.itemId === "frame.ninth-life" && row.count > 0)) {
+    yours.add("nft.ninth-life");
+  }
+  for (const id of yours) recordNftClaim(id);
+  const taken = listedNftClaims();
   return {
     mode: "demo",
     yarn: state.yarn,
@@ -101,20 +108,28 @@ export function toPublicState(
         bagworkCount: state.bagworkCount ?? 0,
       }),
       marks: state.nftMarks ?? [],
+      yours: [...yours],
+      taken,
     },
-    drops: publicDropBoard(config),
+    drops: publicDropBoard(config, yours, taken),
   };
 }
 
-export function publicDropBoard(config: AppConfig): PublicDropLane[] {
+export function publicDropBoard(
+  config: AppConfig,
+  yours: ReadonlySet<string> = new Set(),
+  taken: readonly string[] = listedNftClaims(),
+): PublicDropLane[] {
   const catalog = catalogV1();
   const odds = formatPublicOdds(ODDS_TABLE_V2, config.gacha.pityRareHard);
+  const claimOf = (id: string): PublicItem["claimed"] =>
+    yours.has(id) ? "yours" : taken.includes(id) ? "taken" : undefined;
   return odds.rows.map((row) => {
     if (row.rarity === "ultra") {
       return {
         rarity: row.rarity,
         percent: row.percent,
-        note: "Sample Ultra 1/1s. Not live. 0.10% falls to rare today. Mint needs a 30-day $CATE hold. Gold cuts to Diamond after 90 days + 15 bagwork posts.",
+        note: "Sample Ultra 1/1s. Not live. 0.10% falls to rare today. Mint needs a 30-day $CATE hold. Gold cuts to Diamond after 90 days + 15 bagwork posts. Won 1/1s are crossed out.",
         items: NINTH_LIFE_PREVIEWS.filter((p) => p.set === "pfp").map(
           (p) => ({
             itemId: p.id,
@@ -126,6 +141,7 @@ export function publicDropBoard(config: AppConfig): PublicDropLane[] {
             copy: p.copy,
             imageSrc: p.src,
             sample: true,
+            claimed: claimOf(p.id),
           }),
         ),
       };
@@ -318,10 +334,18 @@ export function markDemoUltra(
     (err as Error & { status: number }).status = 400;
     throw err;
   }
-  return {
+  const alreadyYours = (state.nftMarks ?? []).some((m) => m.itemId === itemId);
+  if (!alreadyYours && nftIsClaimed(itemId)) {
+    const err = new Error("someone already won that 1/1");
+    (err as Error & { status: number }).status = 400;
+    throw err;
+  }
+  const next = {
     ...state,
     nftMarks: markUltraGold(state.nftMarks ?? [], itemId, nowMs),
   };
+  recordNftClaim(itemId);
+  return next;
 }
 
 export function upgradeDemoUltra(

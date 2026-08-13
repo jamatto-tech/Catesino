@@ -2409,6 +2409,27 @@ input {
   border-color: var(--gold);
   box-shadow: 0 0 24px rgba(242, 185, 46, 0.18);
 }
+.drop-card--won {
+  position: relative;
+}
+.drop-card--won .drop-card__emoji {
+  filter: grayscale(0.9) brightness(0.42);
+}
+.drop-card--won::after,
+.drop-card--won::before {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 28%;
+  height: 2px;
+  background: rgba(224, 112, 90, 0.85);
+  transform-origin: center;
+  z-index: 2;
+  pointer-events: none;
+}
+.drop-card--won::before { transform: rotate(28deg); }
+.drop-card--won::after { transform: rotate(-28deg); }
 .drop-card--art {
   min-height: 11rem;
   padding: 0.45rem 0.45rem 0.7rem;
@@ -2539,6 +2560,35 @@ input {
 }
 .mint-card[data-tier="locked"] {
   opacity: 0.72;
+}
+.mint-card--won .mint-pair {
+  position: relative;
+  filter: grayscale(0.85) brightness(0.42);
+}
+.mint-card--won .mint-pair::before,
+.mint-card--won .mint-pair::after {
+  content: "";
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 48%;
+  height: 3px;
+  background: rgba(224, 112, 90, 0.9);
+  z-index: 3;
+  pointer-events: none;
+}
+.mint-card--won .mint-pair::before { transform: rotate(24deg); }
+.mint-card--won .mint-pair::after { transform: rotate(-24deg); }
+.mint-card--won .mint-pair figure[data-tier="diamond"]::after {
+  display: none;
+}
+.mint-card__won {
+  margin: 0.55rem 0 0 !important;
+  font-family: var(--mono) !important;
+  font-size: 0.62rem !important;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lose) !important;
 }
 .mint-card[data-tier="diamond"] .mint-card__rarity {
   color: #cfe4ff;
