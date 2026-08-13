@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CateMachine } from "@/components/CateMachine";
-import { MintPreviewGrid } from "@/components/MintPreviewGrid";
 import { publicDropBoard } from "@/lib/gacha-demo";
 import { getServerConfig } from "@/lib/server-config";
 
@@ -39,13 +38,18 @@ export default function MachinePage() {
         </p>
         <h1>THE CATE MACHINE</h1>
         <p>
-          Yank the lever. Commons are cosmetics. Rare and ultra are scarce —
-          samples below, not live mints. After starter yarn, daily refills
-          take a public $CATE post on X.
+          Yank the lever. Commons are cosmetics. Rare and Ultra mints need a
+          30-day $CATE hold. Ultra starts Gold and can cut to Diamond after
+          90 days plus bagwork. After starter yarn, daily refills take a
+          public $CATE post on X.
+        </p>
+        <p style={{ marginTop: "1rem" }}>
+          <a className="btn btn--line btn--sm" href="#diamond-mints">
+            See Gold &amp; Diamond
+          </a>
         </p>
       </header>
       <CateMachine initialDrops={publicDropBoard(config)} />
-      <MintPreviewGrid />
     </main>
   );
 }

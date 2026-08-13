@@ -4,8 +4,11 @@ import type { AppConfig } from "@catesino/config";
 import {
   applyEconomy,
   catalogV1,
+  cutUltraDiamond,
   formatPublicOdds,
   itemById,
+  markUltraGold,
+  nftProgress,
   ODDS_TABLE_V2,
   rollPull,
   type CookieReceipt,
@@ -90,6 +93,14 @@ export function toPublicState(
     faucet: { lastFaucetUtcDate: state.lastFaucetUtcDate },
     bagwork: {
       unlockedToday: state.lastBagworkUtcDate === utcDateString(Date.now()),
+      count: state.bagworkCount ?? 0,
+    },
+    nft: {
+      ...nftProgress({
+        holdStartedAt: state.holdStartedAt,
+        bagworkCount: state.bagworkCount ?? 0,
+      }),
+      marks: state.nftMarks ?? [],
     },
     drops: publicDropBoard(config),
   };
@@ -103,7 +114,7 @@ export function publicDropBoard(config: AppConfig): PublicDropLane[] {
       return {
         rarity: row.rarity,
         percent: row.percent,
-        note: "Sample mints — not live. Today this 0.10% falls to rare.",
+        note: "Sample Ultra 1/1s. Not live. 0.10% falls to rare today. Mint needs a 30-day $CATE hold. Gold cuts to Diamond after 90 days + 15 bagwork posts.",
         items: NINTH_LIFE_PREVIEWS.filter((p) => p.set === "pfp").map(
           (p) => ({
             itemId: p.id,
@@ -122,7 +133,10 @@ export function publicDropBoard(config: AppConfig): PublicDropLane[] {
     return {
       rarity: row.rarity,
       percent: row.percent,
-      note: row.note,
+      note:
+        row.rarity === "rare"
+          ? "Off-chain frame today. The Ninth Life mint needs a 30-day $CATE hold."
+          : row.note,
       items: catalog.items
         .filter((item) => item.rarity === row.rarity)
         .map(toPublicDrop),
@@ -280,6 +294,54 @@ function toCookieReceipt(receipt: PullReceipt): CookieReceipt {
     clientSeed: receipt.clientSeed,
     nonce: receipt.nonce,
     identityKind: receipt.identityKind,
+  };
+}
+
+export function markDemoUltra(
+  state: DemoGachaState,
+  itemId: string,
+  nowMs = Date.now(),
+): DemoGachaState {
+  const preview = NINTH_LIFE_PREVIEWS.find((p) => p.id === itemId);
+  if (!preview || preview.rarity !== "ultra") {
+    const err = new Error("not an ultra mint");
+    (err as Error & { status: number }).status = 400;
+    throw err;
+  }
+  const path = nftProgress({
+    holdStartedAt: state.holdStartedAt,
+    bagworkCount: state.bagworkCount ?? 0,
+    nowMs,
+  });
+  if (!path.canClaim) {
+    const err = new Error("hold $CATE for 30 days first");
+    (err as Error & { status: number }).status = 400;
+    throw err;
+  }
+  return {
+    ...state,
+    nftMarks: markUltraGold(state.nftMarks ?? [], itemId, nowMs),
+  };
+}
+
+export function upgradeDemoUltra(
+  state: DemoGachaState,
+  itemId: string,
+  nowMs = Date.now(),
+): DemoGachaState {
+  const path = nftProgress({
+    holdStartedAt: state.holdStartedAt,
+    bagworkCount: state.bagworkCount ?? 0,
+    nowMs,
+  });
+  if (!path.canCutDiamond) {
+    const err = new Error("need 90 days holding and 15 bagwork posts");
+    (err as Error & { status: number }).status = 400;
+    throw err;
+  }
+  return {
+    ...state,
+    nftMarks: cutUltraDiamond(state.nftMarks ?? [], itemId, nowMs),
   };
 }
 

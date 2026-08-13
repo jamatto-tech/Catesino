@@ -2,13 +2,16 @@ import { cookies } from "next/headers";
 import type { AppConfig } from "@catesino/config";
 import { applyYarnBonus } from "@/lib/demo-gacha-session";
 import { loadDemoGacha, saveDemoGacha } from "@/lib/gacha-demo";
+import { fetchCateTape, type CateTape } from "@/lib/cate-price";
 import {
   DESK_COOKIE,
   deskCookieOptions,
   emptyDeskState,
   sealDeskState,
+  settleIfDue,
   unsealDeskState,
   type DeskState,
+  type RideSettle,
 } from "@/lib/desk-session";
 
 export function deskSecret(config: AppConfig): string {
@@ -61,4 +64,26 @@ export function publicDesk(state: DeskState) {
     tapeStreak: state.tapeStreak ?? 0,
     lastTape: state.lastTape,
   };
+}
+
+export async function loadTickedDesk(
+  config: AppConfig,
+  nowMs = Date.now(),
+): Promise<{
+  state: DeskState;
+  tape: CateTape | null;
+  ride: RideSettle | null;
+}> {
+  const state = await loadDesk(config, nowMs);
+  let tape: CateTape | null = null;
+  try {
+    tape = await fetchCateTape();
+  } catch {
+    tape = null;
+  }
+  const ticked = settleIfDue(state, tape?.usd ?? null, nowMs);
+  if (ticked.ride && !ticked.ride.already) {
+    await saveDesk(ticked.state, config, nowMs);
+  }
+  return { state: ticked.state, tape, ride: ticked.ride };
 }

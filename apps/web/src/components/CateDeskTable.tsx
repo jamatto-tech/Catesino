@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { CateMascot } from "@/components/CateMascot";
 import { DeskHud } from "@/components/DeskHud";
 import { useDesk } from "@/lib/use-desk";
 
@@ -9,6 +10,8 @@ export function CateDeskTable() {
   const [now, setNow] = useState(() => Date.now());
   const [ticks, setTicks] = useState<number[]>([]);
   const settling = useRef(false);
+  const busyRef = useRef(busy);
+  busyRef.current = busy;
 
   const pos = desk?.position ?? null;
   const open = Boolean(pos && !pos.settled && now < pos.endsAt);
@@ -25,103 +28,127 @@ export function CateDeskTable() {
   }, [pos?.startedAt, pos?.entryUsd, pos?.settled]);
 
   useEffect(() => {
-    if (!open || !pos) return;
-    let cancelled = false;
-    const pull = async () => {
-      try {
-        const res = await fetch("/api/demo/desk/price");
-        const data = (await res.json()) as { usd?: number };
-        if (!cancelled && typeof data.usd === "number" && data.usd > 0) {
-          setTicks((prev) => [...prev.slice(-47), data.usd as number]);
-        }
-      } catch {
-        /* keep last tick */
-      }
-    };
-    void pull();
-    const id = window.setInterval(() => void pull(), 1000);
-    return () => {
-      cancelled = true;
-      window.clearInterval(id);
-    };
-  }, [open, pos?.startedAt]);
+    if (!open || !tape || !(tape.usd > 0)) return;
+    setTicks((prev) => {
+      if (prev[prev.length - 1] === tape.usd) return prev;
+      return [...prev.slice(-47), tape.usd];
+    });
+  }, [open, tape?.usd, tape?.ts]);
 
   useEffect(() => {
-    if (!ready || busy || settling.current) return;
+    if (!ready || busy || settling.current || pos?.settled) return;
     settling.current = true;
-    void act("desk.settle").finally(() => {
+    void act("desk.settle", {}, { quiet: true }).finally(() => {
       settling.current = false;
     });
-  }, [ready, busy, act]);
+  }, [ready, busy, pos?.settled, act]);
 
-  const last = ticks[ticks.length - 1] ?? pos?.entryUsd ?? tape?.usd ?? 0;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.repeat || busyRef.current || !tape) return;
+      if (pos && !pos.settled) return;
+      if (e.key === "l" || e.key === "L") void act("desk.open", { side: "long" });
+      if (e.key === "s" || e.key === "S") void act("desk.open", { side: "short" });
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [act, tape, pos]);
+
+  const last =
+    ticks[ticks.length - 1] ?? pos?.exitUsd ?? pos?.entryUsd ?? tape?.usd ?? 0;
   const livePct =
     pos && pos.entryUsd > 0 ? ((last - pos.entryUsd) / pos.entryUsd) * 100 : 0;
   const paper = pos ? (pos.side === "long" ? livePct : -livePct) : 0;
   const left = open && pos ? Math.max(0, pos.endsAt - now) : 0;
   const span = pos ? Math.max(1, pos.endsAt - pos.startedAt) : 1;
-  const ring = open && pos ? 1 - left / span : 0;
+  const ring = open && pos ? 1 - left / span : pos?.settled ? 1 : 0;
 
   const mood =
-    pos?.settled && pos.won
-      ? "win"
-      : pos?.settled && pos.won === false
-        ? "lose"
-        : open
-          ? paper >= 0
-            ? "up"
-            : "down"
-          : "idle";
+    pos?.settled && pos.push
+      ? "push"
+      : pos?.settled && pos.won
+        ? "win"
+        : pos?.settled
+          ? "lose"
+          : open
+            ? paper >= 0
+              ? "up"
+              : "down"
+            : "idle";
 
-  const slam =
-    pos?.settled && ticks.length > 1 && almostFlat(pos, last)
-      ? pos.won
-        ? "Tape barely moved. You still called the side."
-        : "Tape didn't even breathe. Still faded."
-      : null;
+  const chartTicks =
+    pos?.settled && ticks.length < 2
+      ? [pos.entryUsd, pos.exitUsd ?? pos.entryUsd]
+      : ticks;
 
   return (
-    <div className="machine">
-      <DeskHud conviction={desk?.conviction ?? 0} tape={tape} />
+    <div className="machine desk-game">
+      <DeskHud
+        conviction={desk?.conviction ?? 0}
+        tape={tape}
+        vault={desk?.vault}
+      />
 
-      <div className={`ride-arena ride-arena--${mood}`}>
+      <div className={`desk-stage ride-arena ride-arena--${mood}`}>
+        <CateMascot
+          pose="watch"
+          mood={
+            mood === "win" || mood === "up"
+              ? "up"
+              : mood === "lose" || mood === "down"
+                ? "down"
+                : mood === "push"
+                  ? "bait"
+                  : "idle"
+          }
+        />
         <span className="hold-arena__kicker">
           {open
-            ? "live tape"
+            ? `${pos?.side ?? "ride"} · live tape`
             : ready
               ? "settling"
               : pos?.settled
-                ? pos.won
-                  ? "printed"
-                  : "faded"
+                ? pos.push
+                  ? "flat push"
+                  : pos.won
+                    ? "printed"
+                    : "faded"
                 : "the desk"}
         </span>
 
-        {open || (pos && !pos.settled) ? (
+        {pos ? (
           <>
-            <RideChart ticks={ticks} entry={pos!.entryUsd} side={pos!.side} />
+            <div className="ride-meta">
+              <b className={pos.side === "long" ? "is-up" : "is-down"}>
+                {pos.side.toUpperCase()}
+              </b>
+              {open || ready ? (
+                <span className="ride-count">{Math.ceil(left / 1000)}</span>
+              ) : null}
+            </div>
+            <RideChart ticks={chartTicks} entry={pos.entryUsd} side={pos.side} />
             <div className="ride-readout">
               <strong className={paper >= 0 ? "is-up" : "is-down"}>
                 {paper >= 0 ? "+" : ""}
                 {paper.toFixed(3)}%
               </strong>
               <em>
-                now ${formatPx(last)} · {Math.ceil(left / 1000)}s
+                ${formatPx(pos.entryUsd)} → ${formatPx(last)}
+                {pos.settled
+                  ? pos.push
+                    ? " · push"
+                    : pos.won
+                      ? " · printed"
+                      : " · faded"
+                  : ` · ${Math.ceil(left / 1000)}s`}
               </em>
             </div>
             <i className="ride-ring" style={{ ["--t" as string]: ring }} />
           </>
-        ) : pos?.settled ? (
-          <>
-            <strong>
-              {pos.won ? "PRINTED" : "FADED"} · {pos.side.toUpperCase()}
-            </strong>
-            <em>{slam ?? `from $${formatPx(pos.entryUsd)}`}</em>
-          </>
         ) : (
           <p>
-            Paper long or short live $CATE. The window is twenty seconds. Score,
-            not cash.
+            Paper long or short live $CATE. Twenty seconds. Flat tape is a
+            push — shorts don&apos;t auto-lose.
           </p>
         )}
       </div>
@@ -152,6 +179,7 @@ export function CateDeskTable() {
           </>
         )}
       </div>
+      {open || ready ? null : <p className="desk-keys">L long · S short</p>}
       {note ? <p className="machine__hint">{note}</p> : null}
       {error ? (
         <div className="alert" role="alert" style={{ marginTop: "1rem" }}>
@@ -172,7 +200,7 @@ function RideChart({
   side: "long" | "short";
 }) {
   const w = 320;
-  const h = 118;
+  const h = 132;
   const pad = 10;
   const pts = ticks.length ? ticks : [entry];
   const min = Math.min(entry, ...pts);
@@ -184,10 +212,13 @@ function RideChart({
   const x = (i: number) =>
     pad + (i / Math.max(pts.length - 1, 1)) * (w - pad * 2);
   const y = (v: number) => pad + (1 - (v - lo) / range) * (h - pad * 2);
+  const lastX = x(pts.length - 1);
+  const lastY = y(pts[pts.length - 1] ?? entry);
   const d = pts
     .map((v, i) => `${i === 0 ? "M" : "L"}${x(i).toFixed(1)},${y(v).toFixed(1)}`)
     .join(" ");
-  const last = pts[pts.length - 1];
+  const fill = `${d} L${lastX.toFixed(1)},${(h - pad).toFixed(1)} L${x(0).toFixed(1)},${(h - pad).toFixed(1)} Z`;
+  const last = pts[pts.length - 1] ?? entry;
   const good = side === "long" ? last >= entry : last < entry;
 
   return (
@@ -197,6 +228,13 @@ function RideChart({
       role="img"
       aria-label="live $CATE paper tape"
     >
+      <defs>
+        <linearGradient id="rideFill" x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor={good ? "#5ad19a" : "#e0705a"} stopOpacity="0.35" />
+          <stop offset="100%" stopColor={good ? "#5ad19a" : "#e0705a"} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={fill} fill="url(#rideFill)" />
       <line
         x1={pad}
         x2={w - pad}
@@ -206,21 +244,13 @@ function RideChart({
       />
       <path d={d} className={`ride-chart__line${good ? " is-up" : " is-down"}`} />
       <circle
-        cx={x(pts.length - 1)}
-        cy={y(last)}
-        r="3.5"
+        cx={lastX}
+        cy={lastY}
+        r="4"
         className={`ride-chart__now${good ? " is-up" : " is-down"}`}
       />
     </svg>
   );
-}
-
-function almostFlat(
-  pos: { entryUsd: number },
-  last: number,
-): boolean {
-  if (!pos.entryUsd) return true;
-  return Math.abs(last - pos.entryUsd) / pos.entryUsd < 0.0005;
 }
 
 function formatPx(n: number): string {

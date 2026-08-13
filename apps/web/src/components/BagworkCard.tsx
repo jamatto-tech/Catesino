@@ -49,7 +49,8 @@ export function BagworkCard({ unlockedToday, onUnlocked }: Props) {
         <>
           <p>
             After the starter yarn, daily refills come from working the bag.
-            Post about <strong>$CATE</strong> on X, then paste the link.
+            Post about <strong>$CATE</strong> on X, then paste the link. Your
+            first post also starts the 30-day mint hold clock.
           </p>
           <div className="bagwork__row">
             <input

@@ -5,9 +5,15 @@ export type MintPreview = {
   rarity: "rare" | "ultra";
   supply: string;
   src: string;
+  diamondSrc?: string;
   copy: string;
   set: "pfp" | "scene";
 };
+
+export function ultraDiamondSrc(id: string): string | undefined {
+  if (!id.startsWith("nft.pfp-")) return undefined;
+  return `/machine/nfts/${id.slice(4)}-diamond.jpg`;
+}
 
 export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
   {
@@ -16,7 +22,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "rare",
     supply: "limited",
     src: "/machine/nfts/ninth-life.jpg",
-    copy: "The collection rare. Nine wisps. Not live.",
+    copy: "Collection rare. Needs a 30-day $CATE hold. Not live.",
     set: "scene",
   },
   {
@@ -25,6 +31,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-crown.jpg",
+    diamondSrc: "/machine/nfts/pfp-crown-diamond.jpg",
     copy: "Gold crown, fur collar. Ultra PFP.",
     set: "pfp",
   },
@@ -34,6 +41,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-drip.jpg",
+    diamondSrc: "/machine/nfts/pfp-drip-diamond.jpg",
     copy: "Cuban link and hoop. Ultra PFP.",
     set: "pfp",
   },
@@ -43,6 +51,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-orbit.jpg",
+    diamondSrc: "/machine/nfts/pfp-orbit-diamond.jpg",
     copy: "Gold helmet, visor open. Ultra PFP.",
     set: "pfp",
   },
@@ -52,6 +61,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-tuxedo.jpg",
+    diamondSrc: "/machine/nfts/pfp-tuxedo-diamond.jpg",
     copy: "Black velvet, gold bow. Ultra PFP.",
     set: "pfp",
   },
@@ -61,6 +71,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-blade.jpg",
+    diamondSrc: "/machine/nfts/pfp-blade-diamond.jpg",
     copy: "Mempo up, gold armor. Ultra PFP.",
     set: "pfp",
   },
@@ -70,6 +81,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-ice.jpg",
+    diamondSrc: "/machine/nfts/pfp-ice-diamond.jpg",
     copy: "Diamond choker and studs. Ultra PFP.",
     set: "pfp",
   },
@@ -79,6 +91,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-pharaoh.jpg",
+    diamondSrc: "/machine/nfts/pfp-pharaoh-diamond.jpg",
     copy: "Nemes and cobra crest. Ultra PFP.",
     set: "pfp",
   },
@@ -88,6 +101,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-hoodie.jpg",
+    diamondSrc: "/machine/nfts/pfp-hoodie-diamond.jpg",
     copy: "Black zip, gold pull. Ultra PFP.",
     set: "pfp",
   },
@@ -97,6 +111,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-tophat.jpg",
+    diamondSrc: "/machine/nfts/pfp-tophat-diamond.jpg",
     copy: "Monocle and silk hat. Ultra PFP.",
     set: "pfp",
   },
@@ -106,6 +121,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-viking.jpg",
+    diamondSrc: "/machine/nfts/pfp-viking-diamond.jpg",
     copy: "Gold horns. Ultra PFP.",
     set: "pfp",
   },
@@ -115,6 +131,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-dj.jpg",
+    diamondSrc: "/machine/nfts/pfp-dj-diamond.jpg",
     copy: "Gold studio cans. Ultra PFP.",
     set: "pfp",
   },
@@ -124,6 +141,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-cowboy.jpg",
+    diamondSrc: "/machine/nfts/pfp-cowboy-diamond.jpg",
     copy: "Gold stetson. Ultra PFP.",
     set: "pfp",
   },
@@ -133,6 +151,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-leather.jpg",
+    diamondSrc: "/machine/nfts/pfp-leather-diamond.jpg",
     copy: "Biker jacket. Ultra PFP.",
     set: "pfp",
   },
@@ -142,6 +161,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-halo.jpg",
+    diamondSrc: "/machine/nfts/pfp-halo-diamond.jpg",
     copy: "Halo and gold feathers. Ultra PFP.",
     set: "pfp",
   },
@@ -151,6 +171,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-beanie.jpg",
+    diamondSrc: "/machine/nfts/pfp-beanie-diamond.jpg",
     copy: "Gold knit, ears out. Ultra PFP.",
     set: "pfp",
   },
@@ -160,6 +181,7 @@ export const NINTH_LIFE_PREVIEWS: readonly MintPreview[] = [
     rarity: "ultra",
     supply: "1/1",
     src: "/machine/nfts/pfp-lei.jpg",
+    diamondSrc: "/machine/nfts/pfp-lei-diamond.jpg",
     copy: "Gold orchids. Ultra PFP.",
     set: "pfp",
   },

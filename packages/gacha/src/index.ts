@@ -54,6 +54,21 @@ export { rollPull } from "./pull.js";
 export { applyEconomy } from "./apply.js";
 export { verifyPull } from "./verify.js";
 export {
+  NFT_CLAIM_HOLD_DAYS,
+  NFT_DIAMOND_BAGWORK,
+  NFT_DIAMOND_HOLD_DAYS,
+  NFT_MAX_MARKS,
+  canClaimRareOrUltra,
+  canCutUltraDiamond,
+  cutUltraDiamond,
+  holdDaysElapsed,
+  markUltraGold,
+  nftProgress,
+  type NftMark,
+  type NftProgress,
+  type NftTier,
+} from "./nft-rules.js";
+export {
   commitSeed,
   freshServerSeed,
   hmacIndex,

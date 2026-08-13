@@ -77,6 +77,15 @@ export default function MachineOddsPage() {
         </p>
       </section>
 
+      <section className="rules-block">
+        <h2 className="rules-block__title">Hold to mint</h2>
+        <p className="rules-how">
+          Rare and Ultra NFTs need 30 days holding $CATE. Ultra mints Gold.
+          Cut Gold to Diamond after 90 days still holding and 15 bagwork
+          posts. Cosmetics still pull with no hold. We never buy mints back.
+        </p>
+      </section>
+
       <details className="verify-doc">
         <summary>How to verify a pull</summary>
         <ol>

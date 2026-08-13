@@ -32,8 +32,8 @@ export default function PlayRulesPage() {
         <h2 className="rules-block__title">The Cate Desk</h2>
         <p className="rules-how">
           Paper long or short live $CATE for twenty seconds. Watch the tape,
-          then it auto-settles. Right: +25 score. Wrong: +5 for showing up.
-          No cash PnL.
+          then it auto-settles. Right: +25. Wrong: +5. Flat tape: push +8 —
+          shorts don&apos;t auto-lose. No cash PnL.
         </p>
         <Link className="btn btn--line btn--sm" href="/play/desk">
           Desk

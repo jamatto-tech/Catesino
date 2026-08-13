@@ -1,15 +1,22 @@
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 import { sessionCookieOptions } from "@/lib/auth/session";
-import { vaultOutcomeFromChange, type VaultCall } from "@/lib/cate-price";
+import {
+  DESK_WINDOW_MS,
+  HOLD_WAVES,
+  deskRideScore,
+  deskRideVerdict,
+  utcDateString,
+  vaultOutcomeFromChange,
+  type DeskSide,
+  type VaultCall,
+} from "@/lib/desk-logic";
+
+export { DESK_WINDOW_MS, HOLD_WAVES, utcDateString } from "@/lib/desk-logic";
+export type { DeskSide } from "@/lib/desk-logic";
 
 export const DESK_COOKIE = "catesino_desk";
 const DESK_TTL_MS = 180 * 24 * 60 * 60 * 1000;
 const DESK_TTL_SEC = 180 * 24 * 3600;
-
-export const HOLD_WAVES = 10;
-export const DESK_WINDOW_MS = 20_000;
-
-export type DeskSide = "long" | "short";
 
 export type DeskState = {
   v: 1;
@@ -28,6 +35,8 @@ export type DeskState = {
     endsAt: number;
     settled: boolean;
     won?: boolean;
+    push?: boolean;
+    exitUsd?: number;
   } | null;
   vault: {
     utcDate: string;
@@ -46,9 +55,13 @@ export type DeskState = {
 
 type Sealed = { p: DeskState; exp: number; mac: string };
 
-export function utcDateString(nowMs: number): string {
-  return new Date(nowMs).toISOString().slice(0, 10);
-}
+export type RideSettle = {
+  won: boolean;
+  push: boolean;
+  conviction: number;
+  exitUsd: number;
+  already: boolean;
+};
 
 export function emptyDeskState(): DeskState {
   return {
@@ -92,7 +105,12 @@ export function unsealDeskState(
     if (!safeEqual(sealed.mac, expected)) return null;
     if (nowMs > sealed.exp) return null;
     if (sealed.p.v !== 1 || typeof sealed.p.deskId !== "string") return null;
-    return sealed.p;
+    return {
+      ...sealed.p,
+      conviction: Number.isFinite(sealed.p.conviction) ? sealed.p.conviction : 0,
+      tapeNonce: Number.isFinite(sealed.p.tapeNonce) ? sealed.p.tapeNonce : 0,
+      tapeStreak: Number.isFinite(sealed.p.tapeStreak) ? sealed.p.tapeStreak : 0,
+    };
   } catch {
     return null;
   }
@@ -136,8 +154,11 @@ export function openPosition(
   entryUsd: number,
   nowMs = Date.now(),
 ): DeskState {
-  if (state.position && !state.position.settled && nowMs < state.position.endsAt) {
-    throw statusError("position still open", 400);
+  if (state.position && !state.position.settled) {
+    if (nowMs < state.position.endsAt) {
+      throw statusError("position still open", 400);
+    }
+    throw statusError("settle the open ride first", 400);
   }
   if (!Number.isFinite(entryUsd) || entryUsd <= 0) {
     throw statusError("price feed unavailable", 400);
@@ -158,24 +179,63 @@ export function settlePosition(
   state: DeskState,
   exitUsd: number,
   nowMs = Date.now(),
-): { state: DeskState; won: boolean; conviction: number } {
+): { state: DeskState } & RideSettle {
   const pos = state.position;
-  if (!pos || pos.settled) throw statusError("no position to settle", 400);
+  if (!pos) throw statusError("no position to settle", 400);
+  if (pos.settled) {
+    return {
+      state,
+      won: Boolean(pos.won),
+      push: Boolean(pos.push),
+      conviction: 0,
+      exitUsd: pos.exitUsd ?? exitUsd,
+      already: true,
+    };
+  }
   if (nowMs < pos.endsAt) throw statusError("window still open", 400);
   if (!Number.isFinite(exitUsd) || exitUsd <= 0) {
     throw statusError("price feed unavailable", 400);
   }
-  const up = exitUsd >= pos.entryUsd;
-  const won = pos.side === "long" ? up : !up;
-  const conviction = won ? 25 : 5;
+  const verdict = deskRideVerdict(pos.side, pos.entryUsd, exitUsd);
+  const conviction = deskRideScore(verdict);
+  const won = verdict === "win";
+  const push = verdict === "push";
   return {
     state: {
       ...state,
       conviction: state.conviction + conviction,
-      position: { ...pos, settled: true, won },
+      position: { ...pos, settled: true, won, push, exitUsd },
     },
     won,
+    push,
     conviction,
+    exitUsd,
+    already: false,
+  };
+}
+
+export function settleIfDue(
+  state: DeskState,
+  exitUsd: number | null,
+  nowMs = Date.now(),
+): { state: DeskState; ride: RideSettle | null } {
+  const pos = state.position;
+  if (!pos || pos.settled || nowMs < pos.endsAt) {
+    return { state, ride: null };
+  }
+  if (exitUsd === null || !Number.isFinite(exitUsd) || exitUsd <= 0) {
+    return { state, ride: null };
+  }
+  const settled = settlePosition(state, exitUsd, nowMs);
+  return {
+    state: settled.state,
+    ride: {
+      won: settled.won,
+      push: settled.push,
+      conviction: settled.conviction,
+      exitUsd: settled.exitUsd,
+      already: settled.already,
+    },
   };
 }
 

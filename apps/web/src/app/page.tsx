@@ -136,7 +136,8 @@ export default function HomePage() {
                 Yarn in, culture out
               </h3>
               <p>
-                Cosmetics now, sample mints later. Daily yarn is bagwork on X.
+                Cosmetics now. Rare/Ultra mints need a 30-day $CATE hold.
+                Ultra Gold can cut to Diamond. Daily yarn is bagwork on X.
                 We don&apos;t cash any of it.
               </p>
             </article>

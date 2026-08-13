@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { CateMascot } from "@/components/CateMascot";
 
 export function DeskShell({
   kicker,
@@ -14,12 +15,11 @@ export function DeskShell({
 }) {
   return (
     <main className="shell machine-page">
-      <p style={{ textAlign: "center", marginTop: "1rem" }}>
-        <Link href="/play" style={{ fontSize: "0.75rem", letterSpacing: "0.1em" }}>
-          ← The Desk
-        </Link>
+      <p className="desk-back">
+        <Link href="/play">← The Desk</Link>
       </p>
-      <header className="page-hero">
+      <header className="page-hero desk-hero">
+        <CateMascot pose="coin" className="desk-hero__coin" />
         <p className="life__tag" style={{ justifyContent: "center" }}>
           {kicker}
         </p>

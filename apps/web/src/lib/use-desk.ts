@@ -17,6 +17,8 @@ export type DeskPublic = {
     endsAt: number;
     settled: boolean;
     won?: boolean;
+    push?: boolean;
+    exitUsd?: number;
   } | null;
   vault: {
     utcDate: string;
@@ -46,6 +48,8 @@ export type DeskActionResult = {
   tape?: CateTape | null;
   error?: string;
   won?: boolean;
+  push?: boolean;
+  already?: boolean;
   yarn?: number;
   convictionDelta?: number;
   result?: "long" | "short";
@@ -61,6 +65,7 @@ export function useDesk() {
   const [busy, setBusy] = useState(false);
   const [note, setNote] = useState<string | null>(null);
   const busyRef = useRef(false);
+  const gen = useRef(0);
 
   const apply = useCallback((data: { desk?: DeskPublic; tape?: CateTape | null }) => {
     if (data.desk) setDesk(data.desk);
@@ -68,12 +73,15 @@ export function useDesk() {
   }, []);
 
   const refresh = useCallback(async () => {
+    if (busyRef.current) return;
+    const token = gen.current;
     const res = await fetch("/api/demo/desk/state");
     const data = (await res.json()) as {
       desk?: DeskPublic;
       tape?: CateTape | null;
       error?: string;
     };
+    if (token !== gen.current) return;
     if (!res.ok) {
       setError(data.error ?? "desk unavailable");
       return;
@@ -82,22 +90,45 @@ export function useDesk() {
     setError(null);
   }, [apply]);
 
+  const refreshTape = useCallback(async () => {
+    try {
+      const res = await fetch("/api/demo/desk/price");
+      const data = (await res.json()) as CateTape & { error?: string };
+      if (!res.ok || !(data.usd > 0)) return;
+      setTape({
+        usd: data.usd,
+        change24h: data.change24h,
+        ts: data.ts,
+        pairUrl: data.pairUrl,
+      });
+    } catch {
+      /* keep last tape */
+    }
+  }, []);
+
   useEffect(() => {
     void refresh();
-    const id = window.setInterval(() => void refresh(), 20_000);
-    return () => window.clearInterval(id);
-  }, [refresh]);
+    const deskId = window.setInterval(() => void refresh(), 12_000);
+    const tapeId = window.setInterval(() => void refreshTape(), 2_000);
+    return () => {
+      window.clearInterval(deskId);
+      window.clearInterval(tapeId);
+    };
+  }, [refresh, refreshTape]);
 
   const act = useCallback(
     async (
       action: string,
       extra: Record<string, string | number | boolean> = {},
+      opts: { quiet?: boolean } = {},
     ): Promise<DeskActionResult | null> => {
       if (busyRef.current) return null;
       busyRef.current = true;
+      gen.current += 1;
+      const token = gen.current;
       setBusy(true);
       setError(null);
-      setNote(null);
+      if (!opts.quiet) setNote(null);
       try {
         const res = await fetch("/api/demo/desk/action", {
           method: "POST",
@@ -106,26 +137,31 @@ export function useDesk() {
         });
         const data = (await res.json()) as DeskActionResult;
         if (!res.ok) {
-          setError(data.error ?? "action failed");
+          if (!opts.quiet) setError(data.error ?? "action failed");
           return null;
         }
         apply(data);
-        const bits = [];
-        if (typeof data.convictionDelta === "number") {
-          bits.push(`+${data.convictionDelta} score`);
+        if (!opts.quiet && !data.already) {
+          const bits = [];
+          if (typeof data.convictionDelta === "number" && data.convictionDelta > 0) {
+            bits.push(`+${data.convictionDelta} score`);
+          }
+          if (data.yarn) bits.push(`+${data.yarn} yarn`);
+          if (data.push) bits.push("flat tape");
+          else if (typeof data.won === "boolean") {
+            bits.push(data.won ? "called it" : "not this time");
+          }
+          if (bits.length) setNote(bits.join(" · "));
         }
-        if (data.yarn) bits.push(`+${data.yarn} yarn`);
-        if (typeof data.won === "boolean") {
-          bits.push(data.won ? "called it" : "not this time");
-        }
-        if (bits.length) setNote(bits.join(" · "));
         return data;
       } catch (e) {
-        setError(e instanceof Error ? e.message : String(e));
+        if (!opts.quiet) setError(e instanceof Error ? e.message : String(e));
         return null;
       } finally {
-        busyRef.current = false;
-        setBusy(false);
+        if (token === gen.current) {
+          busyRef.current = false;
+          setBusy(false);
+        }
       }
     },
     [apply],

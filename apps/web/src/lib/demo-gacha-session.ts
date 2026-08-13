@@ -1,5 +1,5 @@
 import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
-import type { CookieReceipt } from "@catesino/gacha";
+import type { CookieReceipt, NftMark } from "@catesino/gacha";
 import { sessionCookieOptions } from "@/lib/auth/session";
 
 /** Dedicated locker cookie. Not `catesino_session`. */
@@ -21,6 +21,10 @@ export type DemoGachaState = {
   lastReceipt: CookieReceipt | null;
   lastBagworkUtcDate?: string;
   lastBagworkTweetId?: string;
+  /** First bagwork stamp. Live mints will replace this with wallet $CATE first-seen. */
+  holdStartedAt?: number | null;
+  bagworkCount?: number;
+  nftMarks?: NftMark[];
 };
 
 export type YarnFaucetPolicy = {
@@ -53,6 +57,9 @@ export function emptyDemoGachaState(
     inventory: [],
     equipped: {},
     lastReceipt: null,
+    holdStartedAt: null,
+    bagworkCount: 0,
+    nftMarks: [],
   };
 }
 
@@ -82,7 +89,12 @@ export function unsealGachaState(
     if (!safeEqual(sealed.mac, expected)) return null;
     if (nowMs > sealed.exp) return null;
     if (!isDemoGachaState(sealed.p)) return null;
-    return sealed.p;
+    return {
+      ...sealed.p,
+      holdStartedAt: sealed.p.holdStartedAt ?? null,
+      bagworkCount: sealed.p.bagworkCount ?? 0,
+      nftMarks: Array.isArray(sealed.p.nftMarks) ? sealed.p.nftMarks : [],
+    };
   } catch {
     return null;
   }
@@ -128,6 +140,8 @@ export function applyBagworkGrant(
     ...state,
     lastBagworkUtcDate: today,
     lastBagworkTweetId: tweetId,
+    holdStartedAt: state.holdStartedAt ?? nowMs,
+    bagworkCount: (state.bagworkCount ?? 0) + 1,
   };
   if (state.yarn >= policy.yarnCap) {
     return { state: stamped, granted: 0 };

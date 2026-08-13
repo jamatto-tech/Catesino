@@ -1,4 +1,9 @@
-import type { CookieReceipt, CosmeticSlot } from "@catesino/gacha";
+import type {
+  CookieReceipt,
+  CosmeticSlot,
+  NftMark,
+  NftProgress,
+} from "@catesino/gacha";
 
 export type PublicItem = {
   itemId: string;
@@ -34,7 +39,8 @@ export type PublicGachaState = {
   inventory: PublicItem[];
   lastReceipt: CookieReceipt | null;
   faucet: { lastFaucetUtcDate: string };
-  bagwork: { unlockedToday: boolean };
+  bagwork: { unlockedToday: boolean; count: number };
+  nft: NftProgress & { marks: NftMark[] };
   drops: PublicDropLane[];
 };
 

@@ -40,10 +40,5 @@ export async function fetchCateTape(
   return tape;
 }
 
-export type VaultCall = "skip" | "buy" | "big";
-
-export function vaultOutcomeFromChange(change24h: number): VaultCall {
-  if (change24h >= 5) return "big";
-  if (change24h > 0) return "buy";
-  return "skip";
-}
+export type { VaultCall } from "@/lib/desk-logic";
+export { vaultOutcomeFromChange } from "@/lib/desk-logic";

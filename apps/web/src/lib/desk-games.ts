@@ -7,6 +7,7 @@ export type DeskGame = {
   blurb: string;
   href: string;
   emoji: string;
+  art: string;
 };
 
 export const DESK_GAMES: readonly DeskGame[] = [
@@ -17,6 +18,7 @@ export const DESK_GAMES: readonly DeskGame[] = [
     blurb: "A 20-second FUD wave. HOLD on red wicks. Don't tap take-profit.",
     href: "/play/hold",
     emoji: "✊",
+    art: "/machine/nfts/the-mark.jpg",
   },
   {
     id: "desk",
@@ -25,6 +27,7 @@ export const DESK_GAMES: readonly DeskGame[] = [
     blurb: "Paper long or short live $CATE. Ride the tape. Score, not cash.",
     href: "/play/desk",
     emoji: "📉",
+    art: "/memes/cate-believe.jpg",
   },
   {
     id: "vault",
@@ -33,6 +36,7 @@ export const DESK_GAMES: readonly DeskGame[] = [
     blurb: "Skip, buy, or big print. One call. Then we crack the 24h seal.",
     href: "/play/vault",
     emoji: "🏦",
+    art: "/memes/cate-culture.jpg",
   },
   {
     id: "tape",
@@ -41,5 +45,6 @@ export const DESK_GAMES: readonly DeskGame[] = [
     blurb: "Long or short. It prints 50/50. Chase the streak. Not alpha.",
     href: "/play/tape",
     emoji: "📊",
+    art: "/memes/cate-launch.jpg",
   },
 ] as const;

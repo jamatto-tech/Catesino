@@ -8,6 +8,7 @@ import {
   flipTape,
   openPosition,
   sealDeskState,
+  settleIfDue,
   settlePosition,
   unsealDeskState,
 } from "./desk-session";
@@ -53,7 +54,28 @@ describe("desk position", () => {
     );
     const settled = settlePosition(open, 1.1, t0 + DESK_WINDOW_MS);
     expect(settled.won).toBe(true);
+    expect(settled.push).toBe(false);
     expect(settled.conviction).toBe(25);
+    expect(settled.state.position?.exitUsd).toBe(1.1);
+  });
+
+  it("treats a flat tape as a push and will not reopen over an unsettled ride", () => {
+    const t0 = 1_000_000;
+    const open = openPosition(emptyDeskState(), "short", 0.01712, t0);
+    expect(settleIfDue(open, 0.01712, t0 + 1_000).ride).toBeNull();
+    expect(() => openPosition(open, "long", 0.02, t0 + DESK_WINDOW_MS)).toThrow(
+      /settle the open ride/,
+    );
+    const due = settleIfDue(open, 0.01712, t0 + DESK_WINDOW_MS);
+    expect(due.ride?.push).toBe(true);
+    expect(due.ride?.won).toBe(false);
+    expect(due.ride?.conviction).toBe(8);
+    const again = settlePosition(due.state, 0.01712, t0 + DESK_WINDOW_MS);
+    expect(again.already).toBe(true);
+    expect(again.conviction).toBe(0);
+    const next = openPosition(due.state, "long", 0.02, t0 + DESK_WINDOW_MS);
+    expect(next.position?.side).toBe("long");
+    expect(next.position?.settled).toBe(false);
   });
 });
 
@@ -72,6 +94,9 @@ describe("vault", () => {
     expect(r.state.vault?.actual).toBe("buy");
     expect(r.state.vault?.change24h).toBe(2);
     expect(() => callVault(r.state, "skip", -3, t0)).toThrow(/already called/);
+    const nextDay = callVault(r.state, "skip", -3, Date.UTC(2026, 7, 14));
+    expect(nextDay.won).toBe(true);
+    expect(nextDay.state.vault?.utcDate).toBe("2026-08-14");
   });
 });
 

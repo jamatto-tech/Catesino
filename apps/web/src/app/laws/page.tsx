@@ -14,7 +14,7 @@ export default function LawsPage() {
     {
       n: "02",
       title: "Yarn is culture",
-      body: "The Machine pays cosmetics. Daily yarn is bagwork on X. We don't cash frames or future mints.",
+      body: "The Machine pays cosmetics. Rare/Ultra mints need a 30-day $CATE hold. Ultra Gold cuts to Diamond after 90 days and bagwork. We don't cash frames or mints.",
     },
     {
       n: "03",

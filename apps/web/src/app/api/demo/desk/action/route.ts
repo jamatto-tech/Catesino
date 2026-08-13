@@ -1,10 +1,9 @@
 import { getServerConfig } from "@/lib/server-config";
 import { errorFromUnknown, jsonError, jsonOk } from "@/lib/http";
-import { fetchCateTape } from "@/lib/cate-price";
 import {
   deskSecret,
   grantDeskYarn,
-  loadDesk,
+  loadTickedDesk,
   publicDesk,
   saveDesk,
 } from "@/lib/desk-api";
@@ -34,7 +33,9 @@ export async function POST(req: Request) {
       held?: number;
       total?: number;
     };
-    let state = await loadDesk(config);
+    const loaded = await loadTickedDesk(config);
+    let state = loaded.state;
+    const tape = loaded.tape;
     let yarn = 0;
     let extra: Record<string, unknown> = {};
 
@@ -58,19 +59,41 @@ export async function POST(req: Request) {
         if (!body.side || !SIDES.has(body.side)) {
           return jsonError("pick long or short", 400);
         }
-        const tape = await fetchCateTape();
+        if (!tape) return jsonError("price feed unavailable", 503);
         state = openPosition(state, body.side as DeskSide, tape.usd);
         extra = { entryUsd: tape.usd };
         break;
       }
       case "desk.settle": {
-        const tape = await fetchCateTape();
+        if (loaded.ride) {
+          extra = {
+            won: loaded.ride.won,
+            push: loaded.ride.push,
+            convictionDelta: loaded.ride.conviction,
+            exitUsd: loaded.ride.exitUsd,
+            already: loaded.ride.already,
+          };
+          break;
+        }
+        if (state.position?.settled) {
+          extra = {
+            won: Boolean(state.position.won),
+            push: Boolean(state.position.push),
+            convictionDelta: 0,
+            exitUsd: state.position.exitUsd,
+            already: true,
+          };
+          break;
+        }
+        if (!tape) return jsonError("price feed unavailable", 503);
         const settled = settlePosition(state, tape.usd);
         state = settled.state;
         extra = {
           won: settled.won,
+          push: settled.push,
           convictionDelta: settled.conviction,
-          exitUsd: tape.usd,
+          exitUsd: settled.exitUsd,
+          already: settled.already,
         };
         break;
       }
@@ -78,7 +101,7 @@ export async function POST(req: Request) {
         if (!body.pick || !CALLS.has(body.pick)) {
           return jsonError("pick skip, buy, or big", 400);
         }
-        const tape = await fetchCateTape();
+        if (!tape) return jsonError("price feed unavailable", 503);
         const called = callVault(state, body.pick as VaultCall, tape.change24h);
         state = called.state;
         yarn = await grantDeskYarn(config, called.yarn);
@@ -108,13 +131,12 @@ export async function POST(req: Request) {
     }
 
     await saveDesk(state, config);
-    let tape = null;
-    try {
-      tape = await fetchCateTape();
-    } catch {
-      tape = null;
-    }
-    return jsonOk({ desk: publicDesk(state), tape, yarn, ...extra });
+    return jsonOk({
+      desk: publicDesk(state),
+      tape,
+      yarn,
+      ...extra,
+    });
   } catch (e) {
     return errorFromUnknown(e);
   }

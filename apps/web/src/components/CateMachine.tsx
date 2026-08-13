@@ -11,6 +11,8 @@ import type {
 import { dropKindLabel } from "@/lib/gacha-public";
 import { BagworkCard } from "@/components/BagworkCard";
 import { DropBoard } from "@/components/DropBoard";
+import { MintPreviewGrid } from "@/components/MintPreviewGrid";
+import { NftPathCard } from "@/components/NftPathCard";
 
 type PullResponse = PublicGachaState & { receipt?: PullReceipt };
 
@@ -72,6 +74,7 @@ export function CateMachine({
   const lastItem = last ? findDrop(state, last.itemId) : null;
 
   return (
+    <>
     <div className="machine">
       <div
         className={`machine__stage${yank ? " machine__stage--yank" : ""} ${equippedFrame?.cssClass ?? ""}`}
@@ -203,12 +206,21 @@ export function CateMachine({
         <p className="machine__hint">The cat is waiting. Yarn is free drip.</p>
       )}
 
+    </div>
+      <NftPathCard nft={state?.nft} />
+      <MintPreviewGrid
+        nft={state?.nft}
+        onChange={(next) => {
+          setState(next);
+          setError(null);
+        }}
+      />
       <DropBoard
         lanes={state?.drops ?? initialDrops}
         ownedIds={state?.inventory.map((item) => item.itemId) ?? []}
         lastItemId={last?.itemId}
       />
-    </div>
+    </>
   );
 }
 

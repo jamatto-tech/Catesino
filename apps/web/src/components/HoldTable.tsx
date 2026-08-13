@@ -1,112 +1,130 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { CateMascot } from "@/components/CateMascot";
 import { DeskHud } from "@/components/DeskHud";
+import {
+  HOLD_BEAT_MS,
+  HOLD_WAVES,
+  holdTap,
+  holdTimeout,
+  startHoldRound,
+  type HoldRound,
+} from "@/lib/desk-logic";
 import { useDesk } from "@/lib/use-desk";
-
-const WAVES = 10;
-const BEAT_MS = 1700;
-
-const WICKS = [
-  "WICK −28%",
-  "DUMP CANDLE",
-  "−41% WICK",
-  "LIQS PRINTING",
-  "RED CANDLE",
-  "CHART BLEEDING",
-];
-const BAITS = [
-  "TAKE PROFIT NOW",
-  "SELL THE BAG",
-  "YOUR GC SAID DUMP",
-  "EASY +2x — SELL",
-  "FOLD BRO",
-  "MARKET SELL IT",
-];
-
-type Wave = { kind: "wick" | "bait"; text: string };
-
-type Phase = "idle" | "live" | "dead" | "clear";
 
 export function HoldTable() {
   const { desk, tape, error, busy, note, act } = useDesk();
-  const [phase, setPhase] = useState<Phase>("idle");
-  const [waves, setWaves] = useState<Wave[]>([]);
-  const [i, setI] = useState(0);
-  const [held, setHeld] = useState(0);
-  const locked = useRef(false);
+  const [round, setRound] = useState<HoldRound | null>(null);
+  const [beat, setBeat] = useState(1);
+  const [flash, setFlash] = useState<"in" | "miss" | null>(null);
+  const sent = useRef(false);
+  const phaseRef = useRef<"idle" | HoldRound["phase"]>("idle");
+
+  const phase = round?.phase ?? "idle";
+  phaseRef.current = phase;
+  const wave = phase === "live" && round ? round.waves[round.index] : null;
 
   useEffect(() => {
-    if (phase !== "live") return;
-    if (i >= waves.length) {
-      if (locked.current) return;
-      locked.current = true;
-      setPhase("clear");
-      void act("hold.finish", {
-        survived: true,
-        held: waves.length,
-        total: waves.length,
-      });
-      return;
-    }
+    if (!round || round.phase !== "live") return;
+    const born = Date.now();
+    setBeat(1);
+    const tick = window.setInterval(() => {
+      setBeat(Math.max(0, 1 - (Date.now() - born) / HOLD_BEAT_MS));
+    }, 40);
     const id = window.setTimeout(() => {
-      const wave = waves[i];
-      if (wave.kind === "wick") {
-        fold(held);
-        return;
-      }
-      setI((n) => n + 1);
-    }, BEAT_MS);
-    return () => window.clearTimeout(id);
-    // fold/act captured via ref-safe path
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [phase, i, waves]);
+      setRound((cur) => (cur && cur.phase === "live" ? holdTimeout(cur) : cur));
+    }, HOLD_BEAT_MS);
+    return () => {
+      window.clearTimeout(id);
+      window.clearInterval(tick);
+    };
+  }, [round?.phase, round?.index]);
 
-  const fold = (heldCount: number) => {
-    if (locked.current) return;
-    locked.current = true;
-    setPhase("dead");
-    void act("hold.finish", {
-      survived: false,
-      held: heldCount,
-      total: WAVES,
-    });
+  useEffect(() => {
+    if (!round || (round.phase !== "dead" && round.phase !== "clear")) return;
+    if (sent.current) return;
+    sent.current = true;
+    void persist(round);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [round?.phase]);
+
+  const persist = async (done: HoldRound) => {
+    for (let n = 0; n < 3; n++) {
+      const data = await act("hold.finish", {
+        survived: done.phase === "clear",
+        held: done.held,
+        total: done.waves.length,
+      });
+      if (data) return;
+      await wait(300);
+    }
+    sent.current = false;
   };
 
   const start = () => {
-    locked.current = false;
-    setWaves(dealWaves());
-    setI(0);
-    setHeld(0);
-    setPhase("live");
+    if (busy && phaseRef.current !== "idle") return;
+    sent.current = false;
+    setFlash(null);
+    setRound(startHoldRound());
   };
 
-  const tapHold = () => {
-    if (phase !== "live" || locked.current) return;
-    const wave = waves[i];
-    if (!wave) return;
-    if (wave.kind === "bait") {
-      fold(held);
-      return;
-    }
-    setHeld((n) => n + 1);
-    setI((n) => n + 1);
+  const tap = () => {
+    setRound((cur) => {
+      if (!cur || cur.phase !== "live") return cur;
+      const waveNow = cur.waves[cur.index];
+      setFlash(waveNow?.kind === "wick" ? "in" : "miss");
+      window.setTimeout(() => setFlash(null), 220);
+      return holdTap(cur);
+    });
   };
 
-  const wave = phase === "live" ? waves[i] : null;
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.repeat) return;
+      if (e.code !== "Space" && e.code !== "Enter") return;
+      e.preventDefault();
+      if (phaseRef.current === "live") tap();
+      else start();
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // start/tap close over latest via setState
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [busy]);
+
+  const mascotMood =
+    phase === "clear"
+      ? "win"
+      : phase === "dead"
+        ? "lose"
+        : wave?.kind === "wick"
+          ? "wick"
+          : wave?.kind === "bait"
+            ? "bait"
+            : "idle";
 
   return (
-    <div className="machine">
-      <DeskHud conviction={desk?.conviction ?? 0} tape={tape} />
+    <div className="machine desk-game">
+      <DeskHud
+        conviction={desk?.conviction ?? 0}
+        tape={tape}
+        vault={desk?.vault}
+      />
 
       <div
-        className={`hold-arena${wave ? ` hold-arena--${wave.kind}` : ""}`}
+        className={`desk-stage hold-arena${wave ? ` hold-arena--${wave.kind}` : ""}${flash ? ` is-flash-${flash}` : ""}`}
         data-phase={phase}
       >
+        <CateMascot pose="peek" mood={mascotMood} />
+        {phase === "live" ? (
+          <i className="hold-beat" style={{ ["--beat" as string]: beat }} />
+        ) : null}
+
         {phase === "idle" ? (
           <p>
-            Survive {WAVES} hits. Tap <strong>HOLD</strong> on red wicks. Do
-            not tap the fake take-profit.
+            Survive {HOLD_WAVES} hits. Smash <strong>HOLD</strong> on red wicks.
+            Do nothing on fake take-profit.
           </p>
         ) : null}
         {wave ? (
@@ -116,36 +134,55 @@ export function HoldTable() {
             </span>
             <strong>{wave.text}</strong>
             <em>
-              {i + 1} / {waves.length}
+              {(round?.index ?? 0) + 1} / {round?.waves.length ?? HOLD_WAVES}
+              {round ? ` · held ${round.held}` : ""}
             </em>
           </>
         ) : null}
         {phase === "dead" ? (
           <p>
-            Paper hands. Held {held}/{WAVES}.
+            Paper hands. Held {round?.held ?? 0}/{HOLD_WAVES}.
           </p>
         ) : null}
         {phase === "clear" ? (
           <p>You held every wick. That&apos;s the bit.</p>
         ) : null}
+
+        {round ? (
+          <ol className="hold-dots" aria-hidden>
+            {round.waves.map((w, i) => (
+              <li
+                key={`${w.kind}-${i}`}
+                className={
+                  i < round.index
+                    ? "is-done"
+                    : i === round.index && phase === "live"
+                      ? `is-now is-${w.kind}`
+                      : ""
+                }
+              />
+            ))}
+          </ol>
+        ) : null}
       </div>
 
       <div className="btn-row" style={{ marginTop: "1.25rem" }}>
         {phase === "live" ? (
-          <button type="button" className="btn btn--gold" onClick={tapHold}>
+          <button type="button" className="btn btn--gold btn--hold" onClick={tap}>
             HOLD
           </button>
         ) : (
           <button
             type="button"
             className="btn btn--gold"
-            disabled={busy}
+            disabled={busy && phase !== "idle"}
             onClick={start}
           >
             {phase === "idle" ? "Start round" : "Go again"}
           </button>
         )}
       </div>
+      <p className="desk-keys">space / enter</p>
       {note ? <p className="machine__hint">{note}</p> : null}
       {error ? (
         <div className="alert" role="alert" style={{ marginTop: "1rem" }}>
@@ -156,17 +193,6 @@ export function HoldTable() {
   );
 }
 
-function dealWaves(): Wave[] {
-  const out: Wave[] = [];
-  let wicks = 0;
-  for (let n = 0; n < WAVES; n++) {
-    const forceWick = wicks < 4 && n > WAVES - 5;
-    const kind: Wave["kind"] =
-      forceWick || Math.random() < 0.6 ? "wick" : "bait";
-    if (kind === "wick") wicks += 1;
-    const pool = kind === "wick" ? WICKS : BAITS;
-    out.push({ kind, text: pool[n % pool.length] });
-  }
-  if (wicks === 0) out[0] = { kind: "wick", text: WICKS[0] };
-  return out;
+function wait(ms: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
 }

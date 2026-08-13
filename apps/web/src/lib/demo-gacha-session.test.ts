@@ -111,5 +111,8 @@ describe("applyBagworkGrant", () => {
     const nextDay = applyBagworkGrant(first.state, POLICY, "333", now + DAY);
     expect(nextDay.granted).toBe(1);
     expect(nextDay.state.yarn).toBe(7);
+    expect(first.state.holdStartedAt).toBe(now);
+    expect(nextDay.state.holdStartedAt).toBe(now);
+    expect(nextDay.state.bagworkCount).toBe(2);
   });
 });

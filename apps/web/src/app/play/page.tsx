@@ -8,7 +8,13 @@ export default function PlayLobbyPage() {
 
   return (
     <main className="shell" style={{ paddingBottom: "4rem" }}>
-      <header className="page-hero">
+      <header className="page-hero desk-hero">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className="desk-hero__coin"
+          src="/memes/cate-launch.jpg"
+          alt=""
+        />
         <p className="life__tag" style={{ justifyContent: "center" }}>
           the desk · not a casino
         </p>
@@ -27,9 +33,10 @@ export default function PlayLobbyPage() {
 
       <div className="game-grid">
         {DESK_GAMES.map((g) => (
-          <article key={g.id} className="game-card">
-            <div className="game-card__emoji" aria-hidden>
-              {g.emoji}
+          <article key={g.id} className={`game-card game-card--${g.id}`}>
+            <div className="game-card__art" aria-hidden>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={g.art} alt="" />
             </div>
             <h2 className="game-card__name">{g.name}</h2>
             <p className="game-card__tag">{g.tagline}</p>
