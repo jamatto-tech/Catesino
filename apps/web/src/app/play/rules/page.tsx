@@ -46,12 +46,12 @@ export default function PlayRulesPage() {
     <main className="shell" style={{ paddingBottom: "4rem" }}>
       <header className="page-hero">
         <p className="life__tag" style={{ justifyContent: "center" }}>
-          Simple rules · real house math
+          simple rules · real house math
         </p>
-        <h1>HOW TO PLAY</h1>
+        <h1>HOW IT WORKS</h1>
         <p>
-          Every game uses the same demo wallet. Stake is locked when you bet,
-          then settled when the round ends — same idea as a real table.
+          Same demo wallet for every game. Bet locks, then settles. That&apos;s
+          it — no wallet lecture.
         </p>
       </header>
 
@@ -79,8 +79,9 @@ export default function PlayRulesPage() {
             across BlackCate, slots, poker, everything. No real chain yet.
           </li>
           <li>
-            <strong>Why play here:</strong> house edge still points at the{" "}
-            <Link href="/">$CATE ritual</Link> when live — not a random rug chart.
+            <strong>Why play here:</strong> house edge points at{" "}
+            <Link href="/">$CATE</Link> when live — not a candle you have zero
+            conviction on.
           </li>
         </ul>
       </section>
@@ -290,11 +291,11 @@ export default function PlayRulesPage() {
         <h2 className="rules-block__title">Ready?</h2>
         <p className="rules-how">
           Same wallet across all {GAME_CATALOG.length} games. Start small, learn
-          the paytables, then climb.
+          the paytables, then climb — or don&apos;t. It&apos;s play.
         </p>
         <div className="btn-row" style={{ justifyContent: "flex-start", marginTop: "1rem" }}>
           <Link className="btn btn--gold" href="/play">
-            Open the floor
+            See the games
           </Link>
           <Link className="btn btn--line" href="/">
             Back home

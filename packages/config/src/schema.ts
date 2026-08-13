@@ -66,6 +66,19 @@ export const envSchema = z.object({
   FF_CATEPOKER_ENABLED: boolFromEnv.default(true),
   FF_VIDEOCATE_ENABLED: boolFromEnv.default(true),
 
+  FF_GACHA_ENABLED: boolFromEnv.default(true),
+  FF_GACHA_CATE_HOLDER_PULL: boolFromEnv.default(false),
+  FF_GACHA_PAID_PULLS: boolFromEnv.default(false),
+  FF_GACHA_NFT_PRIZES: boolFromEnv.default(false),
+
+  CATE_DECIMALS: numberFromEnv.int().min(0).max(12).default(6),
+  CATE_HOLDER_MIN: numberFromEnv.min(0).default(100_000),
+  GACHA_PAID_PULL_USDC: numberFromEnv.min(0).default(2),
+  GACHA_PITY_RARE_HARD: numberFromEnv.int().min(1).default(100),
+  GACHA_YARN_FAUCET_DAILY: numberFromEnv.int().min(0).default(1),
+  GACHA_YARN_START: numberFromEnv.int().min(0).default(5),
+  GACHA_YARN_CAP: numberFromEnv.int().min(0).default(20),
+
   /** Shared deposit intake owner (base58). Empty until key ceremony. */
   DEPOSIT_OWNER_PUBKEY: z.string().default(""),
   /**
@@ -136,6 +149,10 @@ export type FeatureFlags = {
   cateslotsEnabled: boolean;
   catepokerEnabled: boolean;
   videocateEnabled: boolean;
+  gachaEnabled: boolean;
+  gachaCateHolderPull: boolean;
+  gachaPaidPulls: boolean;
+  gachaNftPrizes: boolean;
 };
 
 /** Custody / transfer policy — single source for deposit & withdraw gates. */
@@ -180,17 +197,30 @@ export type BuyPolicy = {
   maxDailyBuyAtomic: bigint;
 };
 
+export type GachaPolicy = {
+  holderMinHuman: number;
+  holderMinAtomic: bigint;
+  paidPullUsdc: number;
+  paidPullAtomic: bigint;
+  pityRareHard: number;
+  yarnFaucetDaily: number;
+  yarnStart: number;
+  yarnCap: number;
+};
+
 export type AppConfig = {
   env: EnvConfig;
   cluster: "mainnet-beta" | "devnet";
   mints: {
     usdc: string;
     cate: string;
+    cateDecimals: number;
     usdcMainnet: string;
     usdcDevnet: string;
   };
   betLimits: BetLimits;
   buyPolicy: BuyPolicy;
+  gacha: GachaPolicy;
   custody: CustodyPolicy;
   compliance: {
     ageMinimum: number;
@@ -227,6 +257,28 @@ export function usdcToAtomic(human: number): bigint {
 export function atomicToUsdc(atomic: bigint): number {
   if (atomic < 0n) throw new Error(`Negative atomic amount: ${atomic}`);
   return Number(atomic) / 10 ** USDC_DECIMALS;
+}
+
+/**
+ * Convert human $CATE to atomic units. Decimals are an argument.
+ * Must not call usdcToAtomic / USDC_DECIMALS — $CATE decimals are confirmed separately.
+ */
+export function cateToAtomic(human: number, decimals: number): bigint {
+  if (!Number.isFinite(human) || human < 0) {
+    throw new Error(`Invalid $CATE amount: ${human}`);
+  }
+  if (!Number.isInteger(decimals) || decimals < 0 || decimals > 12) {
+    throw new Error(`Invalid $CATE decimals: ${decimals}`);
+  }
+  const scaled = Math.round(human * 10 ** decimals);
+  if (!Number.isSafeInteger(scaled)) {
+    throw new Error(`$CATE amount out of safe integer range: ${human}`);
+  }
+  const atomic = BigInt(scaled);
+  if (atomic > MAX_ATOMIC_AMOUNT) {
+    throw new Error(`$CATE amount exceeds maximum: ${human}`);
+  }
+  return atomic;
 }
 
 /** Reject non-positive or absurd atomic amounts used in money movement. */
@@ -276,6 +328,7 @@ export function loadConfig(
     mints: {
       usdc,
       cate: parsed.CATE_MINT,
+      cateDecimals: parsed.CATE_DECIMALS,
       usdcMainnet: parsed.USDC_MINT_MAINNET,
       usdcDevnet: parsed.USDC_MINT_DEVNET,
     },
@@ -293,6 +346,16 @@ export function loadConfig(
       maxDailyBuyUsdc: parsed.MAX_DAILY_BUY_USDC,
       minDailyBuyAtomic: usdcToAtomic(parsed.MIN_DAILY_BUY_USDC),
       maxDailyBuyAtomic: usdcToAtomic(parsed.MAX_DAILY_BUY_USDC),
+    },
+    gacha: {
+      holderMinHuman: parsed.CATE_HOLDER_MIN,
+      holderMinAtomic: cateToAtomic(parsed.CATE_HOLDER_MIN, parsed.CATE_DECIMALS),
+      paidPullUsdc: parsed.GACHA_PAID_PULL_USDC,
+      paidPullAtomic: usdcToAtomic(parsed.GACHA_PAID_PULL_USDC),
+      pityRareHard: parsed.GACHA_PITY_RARE_HARD,
+      yarnFaucetDaily: parsed.GACHA_YARN_FAUCET_DAILY,
+      yarnStart: parsed.GACHA_YARN_START,
+      yarnCap: parsed.GACHA_YARN_CAP,
     },
     custody: {
       depositOwnerPubkey: parsed.DEPOSIT_OWNER_PUBKEY.trim(),
@@ -348,6 +411,10 @@ export function loadConfig(
       cateslotsEnabled: parsed.FF_CATESLOTS_ENABLED,
       catepokerEnabled: parsed.FF_CATEPOKER_ENABLED,
       videocateEnabled: parsed.FF_VIDEOCATE_ENABLED,
+      gachaEnabled: parsed.FF_GACHA_ENABLED,
+      gachaCateHolderPull: parsed.FF_GACHA_CATE_HOLDER_PULL,
+      gachaPaidPulls: parsed.FF_GACHA_PAID_PULLS,
+      gachaNftPrizes: parsed.FF_GACHA_NFT_PRIZES,
     },
     authDomain: parsed.CATESINO_AUTH_DOMAIN,
     sessionSecret: parsed.SESSION_SECRET,
@@ -376,6 +443,37 @@ export function assertRealFundsMovementAllowed(
     config.cluster === "mainnet-beta" &&
     !config.flags.publicMainnetFunds
   ) {
+    throw new Error(
+      "Public mainnet funds disabled (FF_PUBLIC_MAINNET_FUNDS) — counsel gate",
+    );
+  }
+}
+
+export function assertGachaPaidAllowed(config: AppConfig): void {
+  if (!config.flags.gachaEnabled) {
+    throw new Error("Gacha disabled (FF_GACHA_ENABLED)");
+  }
+  if (!config.flags.gachaPaidPulls) {
+    throw new Error("Paid pulls disabled (FF_GACHA_PAID_PULLS)");
+  }
+  if (!config.flags.depositsUsdc) {
+    throw new Error("USDC deposits disabled (FF_DEPOSITS_USDC)");
+  }
+  if (config.cluster === "mainnet-beta" && !config.flags.publicMainnetFunds) {
+    throw new Error(
+      "Public mainnet funds disabled (FF_PUBLIC_MAINNET_FUNDS) — counsel gate",
+    );
+  }
+}
+
+export function assertGachaNftAllowed(config: AppConfig): void {
+  if (!config.flags.gachaEnabled) {
+    throw new Error("Gacha disabled (FF_GACHA_ENABLED)");
+  }
+  if (!config.flags.gachaNftPrizes) {
+    throw new Error("NFT prizes disabled (FF_GACHA_NFT_PRIZES)");
+  }
+  if (config.cluster === "mainnet-beta" && !config.flags.publicMainnetFunds) {
     throw new Error(
       "Public mainnet funds disabled (FF_PUBLIC_MAINNET_FUNDS) — counsel gate",
     );

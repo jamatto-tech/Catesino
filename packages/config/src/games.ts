@@ -26,7 +26,7 @@ export const GAME_CATALOG: readonly GameCatalogEntry[] = [
   {
     id: "blackcate",
     name: "BlackCate",
-    tagline: "The felt favorite",
+    tagline: "21 or feed the cat",
     classic: "Blackjack",
     href: "/play/blackcate",
     emoji: "🃏",
@@ -35,7 +35,7 @@ export const GAME_CATALOG: readonly GameCatalogEntry[] = [
   {
     id: "cateslots",
     name: "CateSlots",
-    tagline: "Three reels of Cate",
+    tagline: "Spin. Cope. Repeat.",
     classic: "Slots",
     href: "/play/cateslots",
     emoji: "🎰",
@@ -44,7 +44,7 @@ export const GAME_CATALOG: readonly GameCatalogEntry[] = [
   {
     id: "videocate",
     name: "VideoCate",
-    tagline: "Hold & draw for $CATE",
+    tagline: "Hold the good ones",
     classic: "Video poker",
     href: "/play/videocate",
     emoji: "🖥️",
@@ -53,7 +53,7 @@ export const GAME_CATALOG: readonly GameCatalogEntry[] = [
   {
     id: "catepoker",
     name: "CatePoker",
-    tagline: "Five-card stud, instant",
+    tagline: "Five cards. No speech.",
     classic: "5-card stud",
     href: "/play/catepoker",
     emoji: "♠️",
@@ -62,7 +62,7 @@ export const GAME_CATALOG: readonly GameCatalogEntry[] = [
   {
     id: "cateflip",
     name: "CateFlip",
-    tagline: "Heads or tails",
+    tagline: "Call it. Cate or tails.",
     classic: "Coin flip",
     href: "/play/cateflip",
     emoji: "🪙",
@@ -71,7 +71,7 @@ export const GAME_CATALOG: readonly GameCatalogEntry[] = [
   {
     id: "catedice",
     name: "CateDice",
-    tagline: "Over / under the whisker",
+    tagline: "Over, under, whatever",
     classic: "Dice",
     href: "/play/catedice",
     emoji: "🎲",
@@ -80,7 +80,7 @@ export const GAME_CATALOG: readonly GameCatalogEntry[] = [
   {
     id: "catespin",
     name: "CateSpin",
-    tagline: "Red · black · green zero",
+    tagline: "Red, black, or green cope",
     classic: "Roulette (simple)",
     href: "/play/catespin",
     emoji: "🎡",
@@ -89,7 +89,7 @@ export const GAME_CATALOG: readonly GameCatalogEntry[] = [
   {
     id: "highcate",
     name: "HighCate",
-    tagline: "High · low · lucky seven",
+    tagline: "High, low, lucky 7",
     classic: "Craps-lite / dice total",
     href: "/play/highcate",
     emoji: "🐱",

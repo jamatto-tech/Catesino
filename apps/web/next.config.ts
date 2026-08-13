@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     "@catesino/house-games",
     "@catesino/game-protocol",
     "@catesino/ledger",
+    "@catesino/gacha",
   ],
 };
 

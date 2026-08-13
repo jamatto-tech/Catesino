@@ -9,7 +9,7 @@ export const CATEFLIP_RULES = {
   how: "Pick Cate face (heads) or tails. Fair 50/50 coin. Win pays even money.",
   /** Total credit mult on win (2 = stake back + 1× win). */
   winCreditMult: 2,
-  houseNote: "True 50/50 even money (0% house edge) — rare in land casinos; kept simple for the meme floor.",
+  houseNote: "True 50/50 even money (0% house edge) — rare in land casinos; kept simple on purpose.",
 } as const;
 
 export const CATEDICE_RULES = {

@@ -14,7 +14,7 @@ export function MarketStatsBar() {
       value: `$${config.betLimits.minUsdc}–$${config.betLimits.maxUsdc}`,
     },
     {
-      label: "Buy ritual",
+      label: "House buys $CATE",
       value: `${(config.buyPolicy.buyRatio * 100).toFixed(0)}% free`,
     },
   ];

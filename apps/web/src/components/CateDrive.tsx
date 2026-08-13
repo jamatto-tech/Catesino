@@ -9,10 +9,10 @@ const cate = getCateLinks();
 export function CateDrive({ compact = false }: { compact?: boolean }) {
   return (
     <section className="cate-drive">
-      <h2>{compact ? "Still $CATE" : "This table exists for $CATE"}</h2>
+      <h2>{compact ? "Still $CATE" : "This exists so $CATE gets bought"}</h2>
       <p>
-        Catesino is not a side quest. Chips, story, and treasury ritual all point
-        one way — back to the cat.
+        Don&apos;t have conviction? Don&apos;t trade. Play here. The house take
+        points one way — back to the cat.
       </p>
       <div className="btn-row">
         <a

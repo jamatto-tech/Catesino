@@ -16,6 +16,7 @@
     "@catesino/house-games": "workspace:*",
     "@catesino/game-protocol": "workspace:*",
     "@catesino/ledger": "workspace:*",
+    "@catesino/gacha": "workspace:*",
     "next": "^15.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

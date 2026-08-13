@@ -29,6 +29,9 @@ importers:
       '@catesino/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@catesino/gacha':
+        specifier: workspace:*
+        version: link:../../packages/gacha
       '@catesino/game-protocol':
         specifier: workspace:*
         version: link:../../packages/game-protocol
@@ -130,6 +133,18 @@ importers:
 
   packages/db:
     devDependencies:
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.0.5
+        version: 3.2.7(@types/node@22.20.1)
+
+  packages/gacha:
+    devDependencies:
+      '@types/node':
+        specifier: ^22.13.1
+        version: 22.20.1
       typescript:
         specifier: ^5.7.3
         version: 5.9.3

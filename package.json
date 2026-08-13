@@ -10,6 +10,7 @@
     "test": "pnpm -r --filter=./packages/* run test && pnpm --filter @catesino/web test",
     "test:blackjack": "pnpm --filter @catesino/blackjack test",
     "test:ledger": "pnpm --filter @catesino/ledger test",
+    "test:gacha": "pnpm --filter @catesino/gacha test",
     "dev:web": "pnpm --filter @catesino/web dev",
     "dev:worker": "pnpm --filter @catesino/worker start",
     "lint": "pnpm -r run typecheck"

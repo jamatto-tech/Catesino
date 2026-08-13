@@ -8,8 +8,9 @@ import { getCateLinks } from "@/lib/cate-links";
 const links = [
   { href: "/", label: "Home" },
   { href: "/play", label: "Games" },
+  { href: "/machine", label: "Machine" },
   { href: "/play/rules", label: "How to" },
-  { href: "/laws", label: "Laws" },
+  { href: "/laws", label: "The deal" },
 ] as const;
 
 /** Stable on server + client (no process.env). */
@@ -48,7 +49,7 @@ export function SiteHeader() {
 
       <div className="top__actions">
         <Link className="btn btn--line btn--sm" href="/play">
-          Floor
+          Play
         </Link>
         <a
           className="btn btn--gold btn--sm"

@@ -13,7 +13,7 @@ export default function BlackCatePage() {
         <h1>BlackCate</h1>
         <p>BlackCate is offline by feature flag.</p>
         <Link className="btn btn--line" href="/play">
-          Back to floor
+          Back to games
         </Link>
       </main>
     );

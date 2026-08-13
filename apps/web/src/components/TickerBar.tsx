@@ -25,7 +25,7 @@ export function TickerBar() {
       </span>
       <span className="ticker__sep" aria-hidden />
       <span>
-        Buy ritual <b>{(config.buyPolicy.buyRatio * 100).toFixed(0)}%</b>
+        House buys $CATE <b>{(config.buyPolicy.buyRatio * 100).toFixed(0)}%</b>
       </span>
       <span className="ticker__sep" aria-hidden />
       <a href={cate.brand} target="_blank" rel="noreferrer">

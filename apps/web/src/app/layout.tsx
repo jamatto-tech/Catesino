@@ -41,9 +41,9 @@ const mono = Space_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Catesino — play for $CATE",
+  title: "Catesino — stop aping, start playing",
   description:
-    "The community table for CateCoin. Fair blackjack. Daily buy ritual. Sibling of cate.meme.",
+    "Don't trade tokens you have zero conviction on. Play at Catesino — house edge still buys $CATE. Sibling of cate.meme.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
