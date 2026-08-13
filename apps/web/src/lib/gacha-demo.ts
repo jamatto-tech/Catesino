@@ -135,7 +135,7 @@ export function publicOddsPayload(config: AppConfig) {
   return {
     ...formatPublicOdds(ODDS_TABLE_V2, config.gacha.pityRareHard),
     catalogId: catalog.catalogId,
-    copy: "This is not CateSlots. CateSlots pays chips. The Machine pays culture.",
+    copy: "Not a slot. The Machine pays culture. The desk pays conviction.",
     drops: publicDropBoard(config),
   };
 }

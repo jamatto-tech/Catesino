@@ -85,11 +85,11 @@ export default function HomePage() {
             <p className="thesis-banner__kicker">Don&apos;t trade what you don&apos;t believe</p>
             <p className="thesis-banner__line">
               Instead of throwing money at random tokens and watching it
-              disappear — <em>play at Catesino</em>, where the house edge still
-              buys <strong>$CATE</strong>.
+              disappear — <em>hold, call, and pull at Catesino</em>. One chart.
+              One cat. <strong>$CATE</strong>.
             </p>
             <p className="thesis-banner__sub">
-              You play. The house plays.{" "}
+              Desk. Machine. Bagwork.{" "}
               <span className="gold">$CATE still wins.</span>
             </p>
           </blockquote>
@@ -106,9 +106,9 @@ export default function HomePage() {
             NOT A CONVICTION TRADE
           </h2>
           <p className="say" style={{ marginTop: "1.25rem" }}>
-            No thesis on a 15m chart. No “just 0.5 SOL bro.” This is play.
-            Small stakes. Cate games. Whatever the house keeps goes toward
-            open-market <strong>$CATE</strong> for the vault.
+            No thesis on a 15m chart. No “just 0.5 SOL bro.” This is the desk
+            and the machine — conviction games and Cate cosmetics, not a
+            casino book.
           </p>
 
           <MemeFrame
@@ -122,24 +122,22 @@ export default function HomePage() {
           <div className="laws">
             <article className="law">
               <h3>
-                <span>01 · PLAY</span>
-                Cate games, not a casino catalog
+                <span>01 · DESK</span>
+                Hold, call, flip
               </h3>
               <p>
-                BlackCate, CateSlots, VideoCate, CatePoker, the silly ones —
-                stakes ${config.betLimits.minUsdc}–{config.betLimits.maxUsdc}{" "}
-                USDC. Every title says Cate.
+                Hold the Line, the Cate Desk, Call the Vault, Tape Flip. One
+                chart. Conviction points — not a casino book.
               </p>
             </article>
             <article className="law">
               <h3>
-                <span>02 · EDGE</span>
-                House take buys the cat
+                <span>02 · MACHINE</span>
+                Yarn in, culture out
               </h3>
               <p>
-                {(config.buyPolicy.buyRatio * 100).toFixed(0)}% of free treasury
-                (after winners + reserve) aims at open-market $CATE. Not a
-                mystery wallet.
+                Cosmetics now, sample mints later. Daily yarn is bagwork on X.
+                We don&apos;t cash any of it.
               </p>
             </article>
             <article className="law">
@@ -247,18 +245,17 @@ export default function HomePage() {
                 Click a game
               </h3>
               <p>
-                Demo chips. No wallet lecture. Learn the loop before anything
-                real exists.
+                Open the desk. Hold or call. No wallet lecture.
               </p>
             </article>
             <article className="law">
               <h3>
                 <span>02</span>
-                Small stakes
+                Bagwork + yarn
               </h3>
               <p>
-                USDC chips. You&apos;re not “investing.” You&apos;re playing.
-                House edge funds the $CATE buy — not a black box.
+                Post $CATE on X for daily yarn. Yank the Machine. Cosmetics,
+                not chips.
               </p>
             </article>
             <article className="law">
@@ -279,16 +276,16 @@ export default function HomePage() {
         <p className="life__tag">the numbers (boring on purpose)</p>
         <div className="facts shell">
           <div>
-            <b>6D · S17</b>
-            <span>blackjack rules</span>
+            <b>4</b>
+            <span>desk games</span>
           </div>
           <div>
-            <b>{(config.buyPolicy.buyRatio * 100).toFixed(0)}%</b>
-            <span>free → $CATE</span>
+            <b>0.90%</b>
+            <span>rare machine</span>
           </div>
           <div>
-            <b>USDC</b>
-            <span>stakes only</span>
+            <b>BAG</b>
+            <span>daily yarn</span>
           </div>
           <div>
             <b>HOLD</b>

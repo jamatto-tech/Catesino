@@ -7,7 +7,7 @@ import { getCateLinks } from "@/lib/cate-links";
 
 const links = [
   { href: "/", label: "Home" },
-  { href: "/play", label: "Games" },
+  { href: "/play", label: "Desk" },
   { href: "/machine", label: "Machine" },
   { href: "/play/rules", label: "How to" },
   { href: "/laws", label: "The deal" },
@@ -49,7 +49,7 @@ export function SiteHeader() {
 
       <div className="top__actions">
         <Link className="btn btn--line btn--sm" href="/play">
-          Play
+          Desk
         </Link>
         <a
           className="btn btn--gold btn--sm"

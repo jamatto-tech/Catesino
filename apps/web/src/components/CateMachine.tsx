@@ -143,7 +143,7 @@ export function CateMachine({
           See the odds
         </Link>
       </div>
-      <p className="cta-note">This is not CateSlots. CateSlots pays chips.</p>
+      <p className="cta-note">Not a slot. Yarn in, culture out.</p>
 
       {error ? (
         <div className="alert" role="alert" style={{ marginTop: "1rem" }}>

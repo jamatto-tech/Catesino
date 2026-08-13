@@ -13,7 +13,7 @@ export function SiteFooter() {
         </a>
         . Don&apos;t ape random charts.
         <br />
-        Not financial advice · 18+ · Demo chips ·{" "}
+        Not financial advice · Demo play ·{" "}
         <a href={cate.buy.pumpfun} target="_blank" rel="noreferrer">
           Buy $CATE
         </a>

@@ -8,7 +8,7 @@ import { getServerConfig } from "@/lib/server-config";
 export const metadata: Metadata = {
   title: "Cate Machine — yarn in, culture out",
   description:
-    "Yank yarn. Get Cate frames and titles. Not a slot — house games still pay chips.",
+    "Yank yarn. Get Cate frames and titles. Daily yarn is bagwork. Not a slot.",
 };
 
 export default function MachinePage() {

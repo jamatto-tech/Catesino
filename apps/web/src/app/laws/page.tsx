@@ -8,23 +8,23 @@ export default function LawsPage() {
   const laws = [
     {
       n: "01",
-      title: "Fair games",
-      body: "Server deals. Stake locks. BlackCate, CateFlip, CateDice, CateSpin, HighCate — no mystery-box RNG story.",
+      title: "No casino book",
+      body: "Hold, desk, vault, tape. Conviction points — not USDC tables. Tape Flip is a published 50/50 and says so.",
     },
     {
       n: "02",
-      title: "USDC chips",
-      body: "You play with USDC. Mints and limits come from shared config — the same stack that knows the $CATE mint.",
+      title: "Yarn is culture",
+      body: "The Machine pays cosmetics. Daily yarn is bagwork on X. We don't cash frames or future mints.",
     },
     {
       n: "03",
-      title: "House buys the cat",
-      body: "Free treasury (after winners + reserve) may buy open-market $CATE. Same cat. Same mint. Public when live.",
+      title: "One chart",
+      body: "If we look at a tape, it's $CATE. Not a random token desk.",
     },
     {
       n: "04",
       title: "Vault holds",
-      body: "Bought Cate sits in the community vault. No app dump. Catesino does not compete with cate.meme — it feeds it.",
+      body: "When the daily buy is live, it still sits in the community vault. Catesino feeds cate.meme — it doesn't compete.",
     },
   ];
 
@@ -58,8 +58,8 @@ export default function LawsPage() {
 
       <section className="life center" style={{ paddingTop: "3rem" }}>
         <p className="say" style={{ textAlign: "center" }}>
-          Edge exists. That&apos;s the price of play. The edge points at{" "}
-          <strong>$CATE</strong> — not some dude&apos;s wallet.
+          Not a broker. Not a book. Play points at{" "}
+          <strong>$CATE</strong> — the desk, the machine, the bag.
         </p>
         <div className="btn-row" style={{ marginTop: "1.5rem" }}>
           <Link className="btn btn--gold" href="/play">

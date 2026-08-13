@@ -11,8 +11,8 @@ export function CateDrive({ compact = false }: { compact?: boolean }) {
     <section className="cate-drive">
       <h2>{compact ? "Still $CATE" : "This exists so $CATE gets bought"}</h2>
       <p>
-        Don&apos;t have conviction? Don&apos;t trade. Play here. The house take
-        points one way — back to the cat.
+        Don&apos;t have conviction? Don&apos;t trade. Hold, call, or yank yarn.
+        Everything points back to the cat.
       </p>
       <div className="btn-row">
         <a

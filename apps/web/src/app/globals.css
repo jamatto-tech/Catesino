@@ -1530,6 +1530,296 @@ input {
   color: var(--mute);
 }
 
+.hold-arena {
+  min-height: 11rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  text-align: center;
+  padding: 1.5rem 1.1rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--hair);
+  background: rgba(11, 10, 18, 0.88);
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.hold-arena p {
+  margin: 0;
+  color: var(--dim);
+  max-width: 22rem;
+  line-height: 1.5;
+}
+.hold-arena__kicker {
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+.hold-arena strong {
+  font-family: var(--word);
+  letter-spacing: 0.06em;
+  font-size: clamp(1.4rem, 4vw, 2rem);
+  color: var(--ivory);
+}
+.hold-arena em {
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 0.7rem;
+  color: var(--mute);
+}
+.hold-arena--wick {
+  border-color: rgba(224, 112, 90, 0.55);
+  background: rgba(80, 22, 16, 0.45);
+  box-shadow: 0 0 40px rgba(224, 112, 90, 0.18);
+}
+.hold-arena--wick strong {
+  color: #ffb0a0;
+}
+.hold-arena--bait {
+  border-color: var(--hair-strong);
+  background: rgba(40, 32, 10, 0.5);
+  box-shadow: 0 0 40px rgba(242, 185, 46, 0.12);
+}
+
+.ride-arena,
+.vault-arena,
+.tape-arena {
+  position: relative;
+  min-height: 13.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  text-align: center;
+  padding: 1.35rem 1rem 1.2rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--hair);
+  background: rgba(11, 10, 18, 0.88);
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+.ride-arena p,
+.vault-arena p,
+.tape-arena p {
+  margin: 0;
+  color: var(--dim);
+  max-width: 22rem;
+  line-height: 1.5;
+}
+.ride-arena strong,
+.vault-arena strong,
+.tape-arena strong {
+  font-family: var(--word);
+  letter-spacing: 0.06em;
+  font-size: clamp(1.25rem, 3.4vw, 1.85rem);
+  color: var(--ivory);
+}
+.ride-arena em,
+.vault-arena em,
+.tape-arena em {
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 0.7rem;
+  color: var(--mute);
+}
+.ride-arena--up {
+  border-color: rgba(90, 209, 154, 0.45);
+  box-shadow: 0 0 36px rgba(90, 209, 154, 0.12);
+}
+.ride-arena--down,
+.ride-arena--lose,
+.vault-arena--lose,
+.tape-arena--lose {
+  border-color: rgba(224, 112, 90, 0.5);
+  background: rgba(80, 22, 16, 0.38);
+  box-shadow: 0 0 36px rgba(224, 112, 90, 0.14);
+}
+.ride-arena--win,
+.vault-arena--win,
+.tape-arena--win {
+  border-color: rgba(90, 209, 154, 0.5);
+  background: rgba(12, 42, 30, 0.45);
+  box-shadow: 0 0 36px rgba(90, 209, 154, 0.14);
+}
+.vault-arena--seal,
+.tape-arena--form {
+  border-color: var(--hair-strong);
+  background: rgba(40, 32, 10, 0.5);
+  box-shadow: 0 0 40px rgba(242, 185, 46, 0.16);
+}
+
+.ride-chart {
+  width: min(100%, 22rem);
+  height: 7.4rem;
+  display: block;
+}
+.ride-chart__entry {
+  stroke: rgba(242, 185, 46, 0.35);
+  stroke-dasharray: 4 4;
+  stroke-width: 1;
+}
+.ride-chart__line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.ride-chart__line.is-up,
+.ride-chart__now.is-up {
+  stroke: var(--win);
+  fill: var(--win);
+}
+.ride-chart__line.is-down,
+.ride-chart__now.is-down {
+  stroke: var(--lose);
+  fill: var(--lose);
+}
+.ride-readout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+.ride-readout strong {
+  font-family: var(--mono);
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+}
+.ride-readout strong.is-up { color: var(--win); }
+.ride-readout strong.is-down { color: var(--lose); }
+.ride-ring {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background:
+    conic-gradient(var(--gold) calc(var(--t, 0) * 100%), rgba(242, 185, 46, 0.12) 0);
+  mask: radial-gradient(circle, transparent 55%, #000 57%);
+}
+
+.vault-doors {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin-top: 1.15rem;
+}
+.vault-door {
+  appearance: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.95rem 0.45rem 0.8rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--hair);
+  background: rgba(11, 10, 18, 0.8);
+  color: var(--ivory);
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+.vault-door:hover:not(:disabled) {
+  border-color: var(--hair-strong);
+  transform: translateY(-2px);
+}
+.vault-door:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+.vault-door__seal {
+  font-size: 1.15rem;
+  color: var(--gold);
+  line-height: 1;
+}
+.vault-door strong {
+  font-family: var(--word);
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.vault-door em {
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 0.58rem;
+  color: var(--mute);
+}
+.vault-door--pick {
+  border-color: var(--hair-strong);
+  box-shadow: 0 0 22px rgba(242, 185, 46, 0.16);
+}
+.vault-door--actual {
+  border-color: rgba(90, 209, 154, 0.55);
+  box-shadow: 0 0 22px rgba(90, 209, 154, 0.14);
+}
+.vault-arena--seal strong {
+  animation: vault-pulse 1.1s ease-in-out infinite;
+}
+@keyframes vault-pulse {
+  50% { color: var(--gold-soft); }
+}
+
+.tape-candle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 6.4rem;
+  justify-content: center;
+  margin: 0.15rem 0 0.35rem;
+}
+.tape-candle__wick {
+  width: 2px;
+  background: var(--ivory);
+  opacity: 0.7;
+}
+.tape-candle__wick--hi { height: 1.1rem; }
+.tape-candle__wick--lo { height: 0.85rem; }
+.tape-candle__body {
+  width: 1.35rem;
+  height: 2.4rem;
+  border-radius: 2px;
+  background: var(--gold);
+}
+.tape-candle--form .tape-candle__body {
+  animation: tape-flicker 0.28s steps(2) infinite, tape-grow 1.6s ease-out both;
+}
+.tape-candle--form .tape-candle__wick--hi {
+  animation: tape-wick 1.6s ease-out both;
+}
+.tape-candle--long .tape-candle__body {
+  height: 3.1rem;
+  background: var(--win);
+}
+.tape-candle--short .tape-candle__body {
+  height: 2.2rem;
+  background: var(--lose);
+}
+.tape-streak {
+  color: var(--gold-soft) !important;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+@keyframes tape-flicker {
+  0%, 100% { background: var(--win); }
+  50% { background: var(--lose); }
+}
+@keyframes tape-grow {
+  from { height: 0.7rem; }
+  to { height: 2.6rem; }
+}
+@keyframes tape-wick {
+  from { height: 0.3rem; }
+  to { height: 1.35rem; }
+}
+
+@media (max-width: 560px) {
+  .vault-doors {
+    grid-template-columns: 1fr;
+  }
+}
+
 .bagwork {
   margin: 1.5rem 0 0;
   padding: 1.15rem 1.15rem 1rem;

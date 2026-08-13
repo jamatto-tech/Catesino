@@ -18,10 +18,7 @@ export function TickerBar() {
       </span>
       <span className="ticker__sep" aria-hidden />
       <span>
-        Bets{" "}
-        <b>
-          ${config.betLimits.minUsdc}–${config.betLimits.maxUsdc}
-        </b>
+        Desk <b>score</b>
       </span>
       <span className="ticker__sep" aria-hidden />
       <span>

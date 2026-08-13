@@ -97,6 +97,16 @@ export function applyYarnFaucet(
   return { state, granted: 0 };
 }
 
+export function applyYarnBonus(
+  state: DemoGachaState,
+  amount: number,
+  cap: number,
+): DemoGachaState {
+  if (amount <= 0) return state;
+  if (state.yarn >= cap) return state;
+  return { ...state, yarn: state.yarn + amount };
+}
+
 export function applyBagworkGrant(
   state: DemoGachaState,
   policy: YarnFaucetPolicy,
