@@ -104,7 +104,7 @@ export function publicDropBoard(config: AppConfig): PublicDropLane[] {
         rarity: row.rarity,
         percent: row.percent,
         note: "Sample mints — not live. Today this 0.10% falls to rare.",
-        items: NINTH_LIFE_PREVIEWS.filter((p) => p.rarity === "ultra").map(
+        items: NINTH_LIFE_PREVIEWS.filter((p) => p.set === "pfp").map(
           (p) => ({
             itemId: p.id,
             count: 0,

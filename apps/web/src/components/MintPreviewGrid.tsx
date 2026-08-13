@@ -7,9 +7,8 @@ export function MintPreviewGrid() {
         <p className="life__tag">ninth life · not live</p>
         <h2>POSSIBLE MINTS</h2>
         <p>
-          Concept art for a later Cate collection. None of these mint today.
-          The Machine still only drops off-chain cosmetics. We would never buy
-          these back.
+          Ultra is a trait PFP set — same sleepy Cate, different drip. None of
+          these mint today. The Machine still only drops off-chain cosmetics.
         </p>
       </header>
       <ul className="mint-grid">
